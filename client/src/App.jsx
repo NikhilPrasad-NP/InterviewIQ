@@ -1,8 +1,9 @@
 import React from 'react'
+import AppRoutes from './routes/AppRoutes'
 
 const App = () => {
   return (
-    <h1>InterviewIQ</h1>
+    <AppRoutes/>
   )
 }
 
