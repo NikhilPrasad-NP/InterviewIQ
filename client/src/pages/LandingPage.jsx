@@ -1,11 +1,16 @@
 import React from 'react'
 import Button from "../components/Button";
 import Navbar from '../components/Navbar';
+import Hero from '../components/Hero';
+import Container from '../components/Container';
 
 function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0A1832]">
-    <Navbar/>
+      <Container>
+        <Navbar />
+        <Hero />
+      </Container>
     </div>
   );
 }
