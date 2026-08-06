@@ -3,7 +3,7 @@ import Button from "../Button";
 
 function Navbar() {
     return (
-        <nav className="flex items-center justify-between px-8 py-5">
+        <nav className="flex items-center justify-between py-5">
             <h2 className="text-2xl font-bold text-white">InterviewIQ</h2>
             <ul className="flex gap-8 text-white">
                 <li className="cursor-pointer hover:text-[#4A7FA7] transition-colors">Features</li>
