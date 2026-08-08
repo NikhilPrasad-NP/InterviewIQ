@@ -8,16 +8,21 @@ function Button({
   variant = "primary",
 }) {
   const variants = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white",
-    secondary: "bg-gray-700 hover:bg-gray-800 text-white",
-    outline: "border border-gray-500 text-white hover:bg-gray-800",
-  };
+  primary:
+    "bg-[#98CCF8] hover:bg-[#6296BF] text-[#003450]",
+
+  secondary:
+    "bg-gray-700 hover:bg-gray-800 text-white",
+
+  outline:
+    "border border-[#4A7FA7] text-[#B3CFE5] hover:bg-[#1A3D63]",
+};
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${variants[variant]}`}
+      className={`rounded-xl px-7 py-3.5 font-medium transition-all duration-300 ${variants[variant] || variants.primary}`}
     >
       {children}
     </button>

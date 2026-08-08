@@ -1,6 +1,7 @@
 import React from 'react'
 import Button from "../Button";
 import { Sparkles } from "lucide-react";
+import { ShieldCheck, BadgeCheck } from "lucide-react";
 
 function Hero() {
   return (
@@ -18,13 +19,11 @@ function Hero() {
             Ace Your Next <span className="text-[#98CCF8]"> Interview</span> with <br /> AI
           </h1>
 
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-gray-300">
-            Practice realistic AI-powered mock interviews, receive
-            personalized feedback, and build the confidence you need
-            to succeed in your next interview.
+          <p className="mt-6 max-w-xl text-lg font-medium text-[#bbc3cb]">
+            Experience high-stakes interview simulations with a technical precision Al. Get real-time feedback, behavioral insights, and technical validation to land your dream job.
           </p>
 
-          <div className="flex gap-4 mt-8">
+          <div className="mt-10 flex items-center text-lg gap-4">
             <Button variant="primary">
               Start Interview
             </Button>
@@ -33,11 +32,134 @@ function Hero() {
               View Demo
             </Button>
           </div>
+          <div className="mt-8 flex items-center gap-8 text-sm text-[#bbc3cb]">
+            <div className="flex items-center gap-2">
+              <BadgeCheck size={18} />
+              <span>TechCorp Approved</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <ShieldCheck size={18} />
+              <span>Privacy Focused</span>
+            </div>
+          </div>
         </div>
 
         {/* Right Side */}
-        <div className="w-[500px] h-[500px] rounded-3xl bg-[#1A3D63] flex items-center justify-center text-white text-xl">
-          AI Illustration
+        <div className="w-full max-w-lg">
+          <div className="rounded-3xl border border-[#2A4566] bg-[#11284A] p-6 shadow-2xl">
+
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1A3D63]">
+                  <Sparkles size={20} className="text-[#B3CFE5]" />
+                </div>
+
+                <div>
+                  <p className="font-semibold text-white">
+                    AI Interview
+                  </p>
+
+                  <p className="text-sm text-gray-400">
+                    Frontend Developer
+                  </p>
+                </div>
+              </div>
+
+              <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
+                Live
+              </span>
+            </div>
+
+            {/* Progress */}
+            <div className="mt-8">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-300">
+                  Interview Progress
+                </span>
+
+                <span className="text-[#B3CFE5]">
+                  7 / 10
+                </span>
+              </div>
+
+              <div className="mt-3 h-2 rounded-full bg-[#0A1832]">
+                <div className="h-2 w-[70%] rounded-full bg-[#4A7FA7]" />
+              </div>
+            </div>
+
+            {/* Scores */}
+            <div className="mt-8 space-y-5">
+
+              <div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-300">
+                    Confidence
+                  </span>
+
+                  <span className="text-white">
+                    92%
+                  </span>
+                </div>
+
+                <div className="mt-2 h-1.5 rounded-full bg-[#0A1832]">
+                  <div className="h-1.5 w-[92%] rounded-full bg-[#4A7FA7]" />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-300">
+                    Communication
+                  </span>
+
+                  <span className="text-white">
+                    88%
+                  </span>
+                </div>
+
+                <div className="mt-2 h-1.5 rounded-full bg-[#0A1832]">
+                  <div className="h-1.5 w-[88%] rounded-full bg-[#4A7FA7]" />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-300">
+                    Technical
+                  </span>
+
+                  <span className="text-white">
+                    95%
+                  </span>
+                </div>
+
+                <div className="mt-2 h-1.5 rounded-full bg-[#0A1832]">
+                  <div className="h-1.5 w-[95%] rounded-full bg-[#4A7FA7]" />
+                </div>
+              </div>
+
+            </div>
+
+            {/* Analysis */}
+            <div className="mt-8 flex items-center gap-3 rounded-2xl border border-[#2A4566] bg-[#0A1832]/60 p-4">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/10">
+                <BadgeCheck size={18} className="text-emerald-400" />
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-white">
+                  AI Analysis Complete
+                </p>
+
+                <p className="text-xs text-gray-400">
+                  Your performance is looking great.
+                </p>
+              </div>
+            </div>
+
+          </div>
         </div>
 
       </div>

@@ -11,9 +11,15 @@ function Navbar() {
                 <li className="cursor-pointer hover:text-[#4A7FA7] transition-colors">About</li>
             </ul>
 
-            <Button variant="outline">
-                Sign In
-            </Button>
+            <div className="flex items-center gap-3">
+                <Button variant="outline">
+                    Log In
+                </Button>
+
+                <Button variant="primary"  >
+                    Get Started
+                </Button>
+            </div>
         </nav>
     )
 }
