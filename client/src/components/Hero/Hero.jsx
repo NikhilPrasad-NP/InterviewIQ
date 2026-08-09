@@ -1,7 +1,6 @@
 import React from 'react'
 import Button from "../Button";
-import { Sparkles } from "lucide-react";
-import { ShieldCheck, BadgeCheck } from "lucide-react";
+import { Sparkles,ShieldCheck, BadgeCheck } from "lucide-react";
 
 function Hero() {
   return (
