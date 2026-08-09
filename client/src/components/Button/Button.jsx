@@ -6,6 +6,7 @@ function Button({
   onClick,
   disabled = false,
   variant = "primary",
+  className = "",
 }) {
   const variants = {
   primary:
@@ -22,7 +23,7 @@ function Button({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-xl px-7 py-3.5 font-medium transition-all duration-300 ${variants[variant] || variants.primary}`}
+      className={`rounded-xl px-7 py-3.5 font-medium transition-all duration-300 ${variants[variant] || variants.primary} ${className}`}
     >
       {children}
     </button>

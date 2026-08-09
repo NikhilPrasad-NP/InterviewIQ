@@ -6,33 +6,32 @@ import { ShieldCheck, BadgeCheck } from "lucide-react";
 function Hero() {
   return (
     <section className=" py-20">
-      <div className="flex items-center justify-between gap-10">
+      <div className="flex flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between">
 
         {/* Left Side */}
-        <div>
+        <div className="text-center lg:text-left">
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#2B4A6F] bg-[#11284A] text-[#98CCF8] text-sm font-medium">
             <Sparkles size={16} color="#98CCF8" />
             <span>Powered by Next-Gen AI</span>
           </div>
 
-          <h1 className="mt-6 text-5xl font-bold leading-tight text-[#D8E2FF]">
+          <h1 className="mt-6 text-4xl sm:text-5xl lg:text-5xl font-bold leading-tight text-[#D8E2FF]">
             Ace Your Next <span className="text-[#98CCF8]"> Interview</span> with <br /> AI
           </h1>
 
-          <p className="mt-6 max-w-xl text-lg font-medium text-[#bbc3cb]">
+          <p className="mt-6 max-w-xl text-base font-medium leading-7 text-[#bbc3cb] sm:text-lg sm:leading-8">
             Experience high-stakes interview simulations with a technical precision Al. Get real-time feedback, behavioral insights, and technical validation to land your dream job.
           </p>
 
-          <div className="mt-10 flex items-center text-lg gap-4">
-            <Button variant="primary">
+          <div className="mt-10 flex w-full flex-col items-center gap-4 text-lg sm:flex-row sm:justify-center lg:w-auto lg:justify-start">
+            <Button variant="primary" className="w-full sm:w-auto">
               Start Interview
             </Button>
-
-            <Button variant="outline">
+            <Button variant="outline" className="w-full sm:w-auto">
               View Demo
             </Button>
           </div>
-          <div className="mt-8 flex items-center gap-8 text-sm text-[#bbc3cb]">
+          <div className="mt-8 flex items-center justify-center gap-6 text-sm text-[#B3CFE5] lg:justify-start">
             <div className="flex items-center gap-2">
               <BadgeCheck size={18} />
               <span>TechCorp Approved</span>
