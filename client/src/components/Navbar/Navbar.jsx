@@ -28,13 +28,29 @@ function Navbar() {
                 </div>
             </nav>
             {isMenuOpen && (
-                <div className="fixed right-0 top-0 z-50 h-full w-72 translate-x-0 bg-[#0A1832]/10 backdrop-blur-md transition-transform duration-300">
+                <div className="fixed right-0 top-0 z-50 h-full w-72 translate-x-0 bg-[#0A1832]/10 backdrop-blur-md transition-transform duration-300 lg:hidden">
                     <button
-                        className="absolute right-5 top-5 text-white lg:hidden"
+                        className="absolute right-5 top-5 text-white "
                         onClick={() => setIsMenuOpen(false)}
                     >
                         <X size={24} />
                     </button>
+                    <div className="mt-20 flex flex-col gap-6 px-6 ">
+                        <a href="#" className="text-lg text-white">
+                            Features
+                        </a>
+
+                        <a href="#" className="text-lg text-white">
+                            Pricing
+                        </a>
+
+                        <a href="#" className="text-lg text-white">
+                            About
+                        </a>
+                        <Button variant="outline" className="mt-4 w-full">
+                            Log In
+                        </Button>
+                    </div>
                 </div>
             )}
         </>

@@ -1,8 +1,35 @@
-import React from 'react'
+import React, { useRef } from "react";
 import Button from "../Button";
-import { Sparkles,ShieldCheck, BadgeCheck } from "lucide-react";
+import { Sparkles, ShieldCheck, BadgeCheck } from "lucide-react";
 
 function Hero() {
+  const cardRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    const card = cardRef.current;
+
+    if (!card) return;
+
+    const rect = card.getBoundingClientRect();
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * 5;
+    const rotateY = ((x - centerX) / centerX) * 5;
+
+    card.style.transform = `perspective(1000px) rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
+  };
+  const handleMouseLeave = () => {
+  const card = cardRef.current;
+
+  if (!card) return;
+
+  card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+};
   return (
     <section className=" py-20">
       <div className="flex flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between">
@@ -45,7 +72,11 @@ function Hero() {
 
         {/* Right Side */}
         <div className="w-full max-w-lg">
-          <div className="rounded-3xl border border-[#2A4566] bg-[#11284A] p-6 shadow-2xl">
+          <div
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
+             onMouseLeave={handleMouseLeave}
+            className="rounded-3xl border border-[#2A4566] bg-[#11284A] p-6 shadow-2xl ">
 
             {/* Header */}
             <div className="flex items-center justify-between">
