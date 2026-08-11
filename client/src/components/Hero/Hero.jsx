@@ -24,12 +24,12 @@ function Hero() {
     card.style.transform = `perspective(1000px) rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
   };
   const handleMouseLeave = () => {
-  const card = cardRef.current;
+    const card = cardRef.current;
 
-  if (!card) return;
+    if (!card) return;
 
-  card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
-};
+    card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+  };
   return (
     <section className=" py-20">
       <div className="flex flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between">
@@ -75,8 +75,8 @@ function Hero() {
           <div
             ref={cardRef}
             onMouseMove={handleMouseMove}
-             onMouseLeave={handleMouseLeave}
-            className="rounded-3xl border border-[#2A4566] bg-[#11284A] p-6 shadow-2xl ">
+            onMouseLeave={handleMouseLeave}
+            className="rounded-3xl border border-[#2A4566] bg-[#11284A] p-6 shadow-2xl">
 
             {/* Header */}
             <div className="flex items-center justify-between">

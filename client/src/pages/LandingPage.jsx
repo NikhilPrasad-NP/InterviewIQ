@@ -3,6 +3,7 @@ import Button from "../components/Button";
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Container from '../components/Container';
+import Features from "../components/Features/Features";
 
 function LandingPage() {
   return (
@@ -10,6 +11,7 @@ function LandingPage() {
       <Container>
         <Navbar />
         <Hero />
+        <Features />
       </Container>
     </div>
   );
