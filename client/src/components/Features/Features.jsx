@@ -17,7 +17,8 @@ function Features() {
                 </p>
             </div>
             <div className="mt-12 grid gap-6 md:grid-cols-3">
-                <div className="group rounded-3xl border border-[#2A4566] bg-[#11284A] p-6 md:col-span-2">
+                <div className="group rounded-3xl border border-[#2A4566] bg-[#11284A] border border-[#2A4566] hover:border-[#4A7FA7] transition-colors duration-1000 p-6 md:col-span-2">
+                    
                     <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg bg-[#1A3D63]">
                         <AudioLines size={22} className="text-[#98CCF8]" />
                     </div>
@@ -45,7 +46,7 @@ function Features() {
                     </div>
                 </div>
 
-                <div className="rounded-3xl border border-[#2A4566] bg-[#11284A] p-6">
+                <div className="rounded-3xl border border-[#2A4566] bg-[#11284A] border border-[#2A4566] bg-[#11284A] border border-[#2A4566] hover:border-[#4A7FA7] transition-colors duration-1000 p-6">
                     <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg bg-[#1A3D63]">
                         <Code2 size={22} className="text-[#98CCF8]" />
                     </div>
@@ -59,7 +60,7 @@ function Features() {
 
                 </div>
 
-                <div className="rounded-3xl border border-[#2A4566] bg-[#11284A] p-6">
+                <div className="rounded-3xl border border-[#2A4566] bg-[#11284A] border border-[#2A4566] bg-[#11284A] border border-[#2A4566] hover:border-[#4A7FA7] transition-colors duration-1000 p-6">
                     <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg bg-[#1A3D63]">
                         <ChartNoAxesCombined size={22} className="text-[#98CCF8]" />
                     </div>
@@ -72,7 +73,7 @@ function Features() {
                     </p>
                 </div>
 
-                <div className="rounded-3xl border border-[#2A4566] bg-[#11284A] p-8 md:col-span-2">
+                <div className="rounded-3xl border border-[#2A4566] bg-[#11284A] border border-[#2A4566] bg-[#11284A] border border-[#2A4566] hover:border-[#4A7FA7] transition-colors duration-1000 p-8 md:col-span-2">
                     <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
 
                         {/* Left Content */}
