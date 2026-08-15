@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Container from '../components/Container';
 import Features from "../components/Features/Features";
+import TrustedBy from "../components/TrustedBy/TrustedBy.jsx";
 
 function LandingPage() {
   return (
@@ -12,6 +13,7 @@ function LandingPage() {
         <Navbar />
         <Hero />
         <Features />
+        <TrustedBy />
       </Container>
     </div>
   );
