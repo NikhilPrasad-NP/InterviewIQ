@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useMotionValue, useTransform } from 'motion/react';
-
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const DRAG_BUFFER = 0;
 const VELOCITY_THRESHOLD = 500;
@@ -8,9 +8,6 @@ const GAP = 16;
 const SPRING_OPTIONS = { type: 'spring', stiffness: 300, damping: 30 };
 
 function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, transition }) {
-    const range = [-(index + 1) * trackItemOffset, -index * trackItemOffset, -(index - 1) * trackItemOffset];
-    const outputRange = [90, 0, -90];
-    const rotateY = useTransform(x, range, outputRange, { clamp: false });
 
     return (
         <motion.div
@@ -21,22 +18,30 @@ function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, trans
                 } overflow-hidden cursor-grab active:cursor-grabbing`}
             style={{
                 width: itemWidth,
-                height: round ? itemWidth : '100%',
-                rotateY: rotateY,
+                height: round ? itemWidth : '220px',
+
                 ...(round && { borderRadius: '50%' })
             }}
             transition={transition}
         >
-            <div className="p-5">
-                <div className="mb-1 font-semibold text-lg text-white">
-                    {item.name}
+            <div className="p-1">
+                <div className="flex items-center gap-3 ">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1A3D63] text-sm font-semibold text-[#B3CFE5]">
+                        {item.initials}
+                    </div>
+
+                    <div>
+                        <div className="font-semibold text-lg text-white">
+                            {item.name}
+                        </div>
+
+                        <p className="text-sm text-gray-400">
+                            {item.role} · {item.company}
+                        </p>
+                    </div>
                 </div>
-
-                <p className="text-sm text-gray-400">
-                    {item.role} · {item.company}
-                </p>
-
-                <p className="mt-4 text-sm leading-6 text-gray-300">
+                <div className="my-5 h-px bg-[#2A4566]" />
+                <p className="text-base leading-7 text-gray-300 mt-5">
                     "{item.quote}"
                 </p>
             </div>
@@ -46,32 +51,56 @@ function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, trans
 
 export default function Carousel({
     items,
-    baseWidth = 300,
+    baseWidth = 420,
     autoplay = false,
     autoplayDelay = 3000,
     pauseOnHover = false,
     loop = false,
-    round = false
+    round = false,
+    showArrows = false
 }) {
     if (!items || items.length === 0) {
         return null;
     }
+    const [position, setPosition] = useState(loop ? 1 : 0);
+    const x = useMotionValue(0);
+    const [containerWidth, setContainerWidth] = useState(0);
     const containerPadding = 16;
-    const itemWidth = baseWidth;
+    const itemWidth = Math.min(baseWidth, containerWidth || baseWidth);
     const trackItemOffset = itemWidth + GAP;
+
     const itemsForRender = useMemo(() => {
         if (!loop) return items;
         if (items.length === 0) return [];
         return [items[items.length - 1], ...items, items[0]];
     }, [items, loop]);
+    const visibleItems = Math.max(
+        1,
+        Math.floor((containerWidth + GAP) / trackItemOffset)
+    );
 
-    const [position, setPosition] = useState(loop ? 1 : 0);
-    const x = useMotionValue(0);
+    const maxPosition = Math.max(
+        0,
+        itemsForRender.length - visibleItems
+    );
+
     const [isHovered, setIsHovered] = useState(false);
     const [isJumping, setIsJumping] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
 
     const containerRef = useRef(null);
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        const observer = new ResizeObserver((entries) => {
+            const width = entries[0].contentRect.width;
+            setContainerWidth(width);
+        });
+
+        observer.observe(containerRef.current);
+
+        return () => observer.disconnect();
+    }, []);
     useEffect(() => {
         if (pauseOnHover && containerRef.current) {
             const container = containerRef.current;
@@ -162,7 +191,7 @@ export default function Carousel({
 
         setPosition(prev => {
             const next = prev + direction;
-            const max = itemsForRender.length - 1;
+            const max = maxPosition;
             return Math.max(0, Math.min(next, max));
         });
     };
@@ -171,7 +200,7 @@ export default function Carousel({
         ? {}
         : {
             dragConstraints: {
-                left: -trackItemOffset * Math.max(itemsForRender.length - 1, 0),
+                left: -trackItemOffset * Math.max(maxPosition, 0),
                 right: 0
             }
         };
@@ -189,6 +218,33 @@ export default function Carousel({
                 ...(round && { height: `${baseWidth}px` })
             }}
         >
+            {showArrows && (
+                <>
+                    <button
+                        type="button"
+                        onClick={() => setPosition(prev => Math.max(0, prev - 1))}
+                        className="absolute left-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#2A4566] bg-[#0A1832]/80 text-white backdrop-blur-sm transition-colors duration-300 hover:border-[#4A7FA7]"
+                        aria-label="Previous testimonial"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() =>
+                            setPosition(prev =>
+                                Math.min(maxPosition, prev + 1)
+                            )
+                        }
+                        className="absolute right-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#2A4566] bg-[#0A1832]/80 text-white backdrop-blur-sm transition-colors duration-300 hover:border-[#4A7FA7]"
+                        aria-label="Next testimonial"
+                    >
+                        <ChevronRight size={20} />
+                    </button>
+                </>
+            )}
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[#0A1832] to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#0A1832] to-transparent" />
             <motion.div
                 className="flex"
                 drag={isAnimating ? false : 'x'}

@@ -22,6 +22,7 @@ function TrustedBy() {
                     {
                         id: 1,
                         name: "Sarah Jenkins",
+                        initials: "SJ",
                         role: "Frontend Developer",
                         company: "TechCorp",
                         quote: "InterviewIQ helped me feel much more confident going into my technical interviews."
@@ -29,6 +30,7 @@ function TrustedBy() {
                     {
                         id: 2,
                         name: "David Chen",
+                        initials: "DC",
                         role: "Software Engineer",
                         company: "Nova",
                         quote: "The realistic interview experience helped me identify exactly where I needed to improve."
@@ -36,11 +38,37 @@ function TrustedBy() {
                     {
                         id: 3,
                         name: "Marcus Rodriguez",
+                        initials: "MR",
                         role: "Full Stack Developer",
                         company: "Vertex",
                         quote: "The AI feedback gave me a much clearer understanding of my communication and technical skills."
-                    }
+                    },
+                    {
+                        id: 4,
+                        name: "Alex roo",
+                        initials: "SJ",
+                        role: "Frontend Developer",
+                        company: "TechCorp",
+                        quote: "InterviewIQ helped me feel much more confident going into my technical interviews."
+                    },
+                    {
+                        id: 5,
+                        name: "Abhijeet vish",
+                        initials: "DC",
+                        role: "Software Engineer",
+                        company: "Nova",
+                        quote: "The realistic interview experience helped me identify exactly where I needed to improve."
+                    },
+                    {
+                        id: 6,
+                        name: "Nikhil Prasad",
+                        initials: "MR",
+                        role: "Full Stack Developer",
+                        company: "Vertex",
+                        quote: "The AI feedback gave me a much clearer understanding of my communication and technical skills."
+                    },
                 ]}
+                showArrows
             />
         </section>
     )
