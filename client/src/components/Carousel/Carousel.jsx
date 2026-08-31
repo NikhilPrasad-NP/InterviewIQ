@@ -200,7 +200,7 @@ export default function Carousel({
         ? {}
         : {
             dragConstraints: {
-                left: -trackItemOffset * Math.max(maxPosition, 0),
+                left: -trackItemOffset * maxPosition,
                 right: 0
             }
         };

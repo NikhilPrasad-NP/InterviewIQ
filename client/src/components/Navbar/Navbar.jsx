@@ -9,9 +9,9 @@ function Navbar() {
             <nav className="flex items-center justify-between py-5">
                 <h2 className="text-2xl font-bold text-white">InterviewIQ</h2>
                 <ul className="hidden lg:flex gap-8 text-white">
-                    <li className="cursor-pointer hover:text-[#4A7FA7] transition-colors">Features</li>
-                    <li className="cursor-pointer hover:text-[#4A7FA7] transition-colors">Pricing</li>
-                    <li className="cursor-pointer hover:text-[#4A7FA7] transition-colors">About</li>
+                    <li className="cursor-pointer hover:text-[#B3CFE5] transition-colors">Features</li>
+                    <li className="cursor-pointer hover:text-[#B3CFE5] transition-colors">Pricing</li>
+                    <li className="cursor-pointer hover:text-[#B3CFE5] transition-colors">About</li>
                 </ul>
 
                 <div className="flex items-center gap-3">
