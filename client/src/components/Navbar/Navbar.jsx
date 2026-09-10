@@ -1,9 +1,16 @@
 import React, { useState } from 'react'
 import Button from "../Button";
 import { Menu, X } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { useAuth } from "@clerk/react";
 
 function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const { isLoaded, isSignedIn } = useAuth()
+
+    if (!isLoaded) {
+        return null
+    }
     return (
         <>
             <nav className="flex items-center justify-between py-5">
@@ -18,13 +25,27 @@ function Navbar() {
                     <button className="lg:hidden text-white" onClick={() => setIsMenuOpen(true)}>
                         <Menu size={24} />
                     </button>
-                    <Button variant="outline" className='hidden lg:inline-flex'>
-                        Log In
-                    </Button>
+                    {isSignedIn ? (
+                        <Link to="/dashboard">
+                            <Button variant="primary" className="px-3 py-1.5 text-sm lg:px-7 lg:py-3.5 lg:text-base">
+                                Dashboard
+                            </Button>
+                        </Link>
+                    ) : (
+                        <>
+                            <Link to="/login">
+                                <Button variant="outline" className="hidden lg:inline-flex">
+                                    Log In
+                                </Button>
+                            </Link>
 
-                    <Button variant="primary" className="px-3 py-1.5 text-sm lg:px-7 lg:py-3.5 lg:text-base">
-                        Get Started
-                    </Button>
+                            <Link to="/register">
+                                <Button variant="primary" className="px-3 py-1.5 text-sm lg:px-7 lg:py-3.5 lg:text-base">
+                                    Get Started
+                                </Button>
+                            </Link>
+                        </>
+                    )}
                 </div>
             </nav>
             {isMenuOpen && (
@@ -47,9 +68,11 @@ function Navbar() {
                         <a href="#" className="text-lg text-white">
                             About
                         </a>
-                        <Button variant="outline" className="mt-4 w-full">
-                            Log In
-                        </Button>
+                        <Link to="/login">
+                            <Button variant="outline" className="mt-4 w-full">
+                                Log In
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             )}

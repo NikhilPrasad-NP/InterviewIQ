@@ -1,9 +1,10 @@
 import React from 'react'
+import { SignIn } from '@clerk/react'
 
 function LoginPage() {
   return (
-    <div>
-      Login Page
+    <div className="min-h-screen flex items-center justify-center">
+      <SignIn forceRedirectUrl="/dashboard" />
     </div>
   )
 }
