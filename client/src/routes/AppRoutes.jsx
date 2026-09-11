@@ -8,6 +8,7 @@ import InterviewPage from "../pages/InterviewPage";
 import HistoryPage from "../pages/HistoryPage";
 import ProfilePage from "../pages/ProfilePage";
 import NotFoundPage from "../pages/NotFoundPage";
+import "../lib/supabase";
 
 function AppRoutes() {
 
