@@ -1,6 +1,6 @@
-import { supabase } from "./supabase";
 
-export async function getProfile(clerkUserId) {
+
+export async function getProfile(supabase, clerkUserId) {
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
@@ -13,7 +13,7 @@ export async function getProfile(clerkUserId) {
 
   return data;
 }
-export async function createProfile(clerkUserId, name) {
+export async function createProfile(supabase, clerkUserId, name) {
   const { data, error } = await supabase
     .from("profiles")
     .insert({

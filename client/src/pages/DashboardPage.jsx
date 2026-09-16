@@ -1,29 +1,39 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useAuth, UserButton, useUser } from '@clerk/react'
 import { Navigate } from 'react-router-dom'
 import { getProfile, createProfile } from '../lib/profileService'
+import { createSupabaseClient } from '../lib/supabase'
 
 function DashboardPage() {
-  const { isLoaded, isSignedIn, userId } = useAuth()
+  const { isLoaded, isSignedIn, userId, getToken } = useAuth()
   const { user } = useUser()
+  const supabase = useMemo(
+    () => createSupabaseClient(getToken),
+    [getToken]
+  )
+
 
 
   useEffect(() => {
-    if (!isLoaded || !isSignedIn || !userId|| !user) return
+    if (!isLoaded || !isSignedIn || !userId || !user) return
 
     async function loadProfile() {
       try {
-        const profile = await getProfile(userId)
+        const profile = await getProfile(supabase, userId)
 
         console.log("Profile:", profile)
-        console.log("First name:", user.firstName)
+
+        if (!profile) {
+          const newProfile = await createProfile(supabase, userId, user.firstName)
+          console.log("New profile created:", newProfile)
+        }
       } catch (error) {
         console.error("Error loading profile:", error)
       }
     }
 
     loadProfile()
-  }, [isLoaded, isSignedIn, userId, user])
+  }, [isLoaded, isSignedIn, userId, user, supabase])
 
 
   if (!isLoaded) {
