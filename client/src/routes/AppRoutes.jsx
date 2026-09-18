@@ -3,7 +3,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
-import DashboardPage from "../pages/DashboardPage";
+import DashboardPage from "../pages/dashboard/DashboardPage";
+import AuthRedirectPage from "../pages/AuthRedirectPage";
+import RoleSelectionPage from "../pages/RoleSelectionPage";
 import InterviewPage from "../pages/InterviewPage";
 import HistoryPage from "../pages/HistoryPage";
 import ProfilePage from "../pages/ProfilePage";
@@ -18,6 +20,8 @@ function AppRoutes() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/auth" element={<AuthRedirectPage />} />
+                <Route path="/choose-role" element={<RoleSelectionPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/interview" element={<InterviewPage />} />
                 <Route path="/history" element={<HistoryPage />} />

@@ -4,7 +4,7 @@ import { SignIn } from '@clerk/react'
 function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <SignIn forceRedirectUrl="/dashboard" />
+      <SignIn forceRedirectUrl="/auth" />
     </div>
   )
 }
