@@ -1,3 +1,4 @@
+
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useClerk } from '@clerk/react'
@@ -9,6 +10,7 @@ import {
   User,
   Settings,
   LogOut,
+  Mic,
 } from 'lucide-react'
 
 import {
@@ -16,12 +18,10 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarHeader,
 } from '@/components/ui/sidebar'
 
 function AppSidebar() {
@@ -56,75 +56,79 @@ function AppSidebar() {
   ]
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar
+      collapsible="icon"
+      className="!border-r-0 !bg-[#0A1832]"
+    >
+      {/* Logo */}
+      <SidebarHeader className="px-4 py-7 group-data-[collapsible=icon]:px-2">
+        <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[#B3CFE5] text-[#0A1832]">
+            <Mic size={18} />
+          </div>
 
-      {/* Header */}
-      <SidebarHeader>
-        <div className="px-2 py-3">
-          <h1 className="text-lg font-bold text-[#F6FAFD] group-data-[collapsible=icon]:hidden">
-            InterviewIQ
-          </h1>
+          <div className="group-data-[collapsible=icon]:hidden">
+            <h1 className="text-xl font-bold leading-none text-[#B3CFE5]">
+              InterviewAI
+            </h1>
 
-          <p className="text-xs text-[#B3CFE5] group-data-[collapsible=icon]:hidden">
-            AI Interview Platform
-          </p>
+            <p className="mt-1 text-xs font-medium text-[#B3CFE5]/70">
+              Pro Plan
+            </p>
+          </div>
         </div>
       </SidebarHeader>
 
-      {/* Main Navigation */}
-      <SidebarContent>
+      {/* Main navigation */}
+      <SidebarContent className="px-3 group-data-[collapsible=icon]:px-2">
         <SidebarGroup>
-          <SidebarGroupLabel>
-            Platform
-          </SidebarGroupLabel>
+          <SidebarMenu className="gap-2">
+            {navigation.map((item) => {
+              const Icon = item.icon
 
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navigation.map((item) => {
-                const Icon = item.icon
-
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={item.title}>
-                      <NavLink to={item.path}>
-                        <Icon />
-                        <span>{item.title}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    render={<NavLink to={item.path} />}
+                    tooltip={item.title}
+                    className="h-9 text-[#B3CFE5] hover:bg-[#1A3D63] hover:text-[#F6FAFD]"
+                  >
+                    <Icon size={18} />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
+          </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer */}
-      <SidebarFooter>
-        <SidebarMenu>
-
+      {/* Bottom navigation */}
+      <SidebarFooter className="px-3 pb-7 group-data-[collapsible=icon]:px-2">
+        <SidebarMenu className="gap-2">
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Settings">
-              <NavLink to="/settings">
-                <Settings />
-                <span>Settings</span>
-              </NavLink>
+            <SidebarMenuButton
+              render={<NavLink to="/settings" />}
+              tooltip="Settings"
+              className="h-9 text-[#B3CFE5] hover:bg-[#1A3D63] hover:text-[#F6FAFD]"
+            >
+              <Settings size={18} />
+              <span>Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Logout"
+              className="h-9 text-red-500 hover:bg-red-500/10 hover:text-red-400"
               onClick={() => signOut({ redirectUrl: '/login' })}
             >
-              <LogOut />
+              <LogOut size={18} />
               <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-
         </SidebarMenu>
       </SidebarFooter>
-
     </Sidebar>
   )
 }
