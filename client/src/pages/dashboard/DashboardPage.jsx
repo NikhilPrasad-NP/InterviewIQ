@@ -1,19 +1,72 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { UserButton, useUser } from '@clerk/react'
 import { Clock3, Plus, Sparkles, ClipboardList, Star, Award, Timer, } from 'lucide-react'
 import AppSidebar from './AppSidebar'
-
-import {
-  SidebarProvider,
-  SidebarInset,
-  SidebarTrigger,
-} from '@/components/ui/sidebar'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, } from 'recharts'
+import { SidebarProvider, SidebarInset, SidebarTrigger, } from '@/components/ui/sidebar'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select'
 
 function DashboardPage() {
   const { user } = useUser()
-
   const firstName = user?.firstName || 'there'
+  const [practiceRange, setPracticeRange] = useState('7')
+  const practiceData7Days = [
+    { day: 'Mon', interviews: 2 },
+    { day: 'Tue', interviews: 4 },
+    { day: 'Wed', interviews: 1 },
+    { day: 'Thu', interviews: 5 },
+    { day: 'Fri', interviews: 3 },
+    { day: 'Sat', interviews: 6 },
+    { day: 'Sun', interviews: 4 },
+  ]
 
+  const practiceData30Days = [
+    { day: '1', interviews: 1 },
+    { day: '2', interviews: 2 },
+    { day: '3', interviews: 0 },
+    { day: '4', interviews: 3 },
+    { day: '5', interviews: 1 },
+    { day: '6', interviews: 4 },
+    { day: '7', interviews: 2 },
+    { day: '8', interviews: 0 },
+    { day: '9', interviews: 3 },
+    { day: '10', interviews: 5 },
+    { day: '11', interviews: 2 },
+    { day: '12', interviews: 1 },
+    { day: '13', interviews: 4 },
+    { day: '14', interviews: 3 },
+    { day: '15', interviews: 0 },
+    { day: '16', interviews: 2 },
+    { day: '17', interviews: 1 },
+    { day: '18', interviews: 5 },
+    { day: '19', interviews: 3 },
+    { day: '20', interviews: 2 },
+    { day: '21', interviews: 4 },
+    { day: '22', interviews: 1 },
+    { day: '23', interviews: 0 },
+    { day: '24', interviews: 3 },
+    { day: '25', interviews: 2 },
+    { day: '26', interviews: 5 },
+    { day: '27', interviews: 1 },
+    { day: '28', interviews: 3 },
+    { day: '29', interviews: 2 },
+    { day: '30', interviews: 4 },
+  ]
+
+  const practiceData =
+    practiceRange === '7'
+      ? practiceData7Days
+      : practiceData30Days
+  const practiceRanges = [
+    {
+      label: 'Last 7 Days',
+      value: '7',
+    },
+    {
+      label: 'Last 30 Days',
+      value: '30',
+    },
+  ]
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -198,6 +251,94 @@ function DashboardPage() {
               </div>
 
             </div>
+            {/* Practice Frequency */}
+            <section className="px-4 pb-6 sm:px-6 lg:px-8">
+              <div className="rounded-xl border border-[#1A3D63] bg-[#0A1832] p-5 sm:p-6">
+
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold text-[#F6FAFD]">
+                      Practice Frequency
+                    </h2>
+
+                    <p className="mt-1 text-sm text-[#B3CFE5]/70">
+                      Your interview practice over the last 7 days
+                    </p>
+                  </div>
+
+                  <Select
+                    items={practiceRanges}
+                    value={practiceRange}
+                    onValueChange={setPracticeRange}
+                  >
+                    <SelectTrigger className="w-[130px] border-[#1A3D63] bg-[#0A1832] text-[#B3CFE5]">
+                      <SelectValue />
+                    </SelectTrigger>
+
+                    <SelectContent
+                      alignItemWithTrigger={false}
+                      side="bottom"
+                    >
+                      <SelectItem value="7">
+                        Last 7 Days
+                      </SelectItem>
+
+                      <SelectItem value="30">
+                        Last 30 Days
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Chart */}
+                <div className="mt-8 h-48 w-full min-w-0">
+                  <ResponsiveContainer width="100%" height={192}>
+                    <BarChart
+                      data={practiceData}
+                      margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
+                    >
+                      <CartesianGrid
+                        vertical={false}
+                        stroke="#1A3D63"
+                      />
+
+                      <XAxis
+                        dataKey="day"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: '#B3CFE5', fontSize: 12 }}
+                      />
+
+                      <YAxis
+                        allowDecimals={false}
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: '#B3CFE5', fontSize: 12 }}
+                      />
+
+                      <Tooltip
+                        cursor={{ fill: '#1A3D63' }}
+                        contentStyle={{
+                          backgroundColor: '#0A1832',
+                          border: '1px solid #1A3D63',
+                          borderRadius: '8px',
+                          color: '#F6FAFD',
+                        }}
+                      />
+
+                      <Bar
+                        dataKey="interviews"
+                        fill="#4A7FA7"
+                        radius={[5, 5, 0, 0]}
+                        barSize={32}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+              </div>
+            </section>
           </div>
         </section>
       </SidebarInset>
