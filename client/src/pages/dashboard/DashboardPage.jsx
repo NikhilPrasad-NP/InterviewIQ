@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { UserButton, useUser } from '@clerk/react'
-import { Clock3, Plus, Sparkles, ClipboardList, Star, Award, Timer, } from 'lucide-react'
+import { Clock3, Plus, Sparkles, ClipboardList, Star, Award, Timer, Lightbulb, Brain, MessageSquareText, Building2, ChevronRight, } from 'lucide-react'
 import AppSidebar from './AppSidebar'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, } from 'recharts'
 import { SidebarProvider, SidebarInset, SidebarTrigger, } from '@/components/ui/sidebar'
@@ -251,8 +251,15 @@ function DashboardPage() {
               </div>
 
             </div>
-            {/* Practice Frequency */}
-            <section className="px-4 pb-6 sm:px-6 lg:px-8">
+          </div>
+        </section>
+
+        {/* Practice Frequency */}
+        <section className="px-4 pb-6 sm:px-6 lg:px-8">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
+
+            <div className="min-w-0">
+
               <div className="rounded-xl border border-[#1A3D63] bg-[#0A1832] p-5 sm:p-6">
 
                 {/* Header */}
@@ -263,7 +270,7 @@ function DashboardPage() {
                     </h2>
 
                     <p className="mt-1 text-sm text-[#B3CFE5]/70">
-                      Your interview practice over the last 7 days
+                      Your interview practice over the last {practiceRange} days
                     </p>
                   </div>
 
@@ -338,11 +345,307 @@ function DashboardPage() {
                 </div>
 
               </div>
-            </section>
+            </div>
+
+            <div className="min-w-0">
+
+              <div className="rounded-xl border border-[#1A3D63] bg-[#0A1832] p-6">
+
+                {/* Heading */}
+                <h2 className="text-lg font-semibold text-[#F6FAFD]">
+                  Quick Actions
+                </h2>
+
+                {/* Actions */}
+                <div className="mt-6 space-y-3">
+
+                  {/* Resume Analysis */}
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-4 rounded-lg p-3 text-left transition-colors duration-200 hover:bg-[#061126]"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1A3D63] text-[#B3CFE5]">
+                      <Lightbulb size={19} />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[#F6FAFD]">
+                        Resume Analysis
+                      </p>
+
+                      <p className="mt-0.5 text-xs text-[#B3CFE5]/70">
+                        Update AI context with your latest CV
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Behavioral Prep */}
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-4 rounded-lg p-3 text-left transition-colors duration-200 hover:bg-[#061126]"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1A3D63] text-[#B3CFE5]">
+                      <Brain size={19} />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[#F6FAFD]">
+                        Behavioral Prep
+                      </p>
+
+                      <p className="mt-0.5 text-xs text-[#B3CFE5]/70">
+                        Practice 20 most common STAR questions
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Mock Peer Review */}
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-4 rounded-lg p-3 text-left transition-colors duration-200 hover:bg-[#061126]"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1A3D63] text-[#B3CFE5]">
+                      <MessageSquareText size={19} />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[#F6FAFD]">
+                        Mock Peer Review
+                      </p>
+
+                      <p className="mt-0.5 text-xs text-[#B3CFE5]/70">
+                        Get anonymous feedback from peers
+                      </p>
+                    </div>
+                  </button>
+
+                </div>
+
+                {/* Upcoming Interview */}
+                <div className="mt-6 rounded-xl border border-[#1A3D63] bg-[#061126] p-4">
+                  <p className="text-sm font-semibold text-[#B3CFE5]">
+                    Upcoming Interview
+                  </p>
+
+                  <p className="mt-1 text-sm text-[#B3CFE5]/80">
+                    No upcoming interviews
+                  </p>
+                </div>
+
+              </div>
+            </div>
           </div>
         </section>
-      </SidebarInset>
-    </SidebarProvider>
+        <section className="px-4 pb-8 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-xl border border-[#1A3D63] bg-[#0A1832]">
+            {/* Header */}
+            <div className="flex items-center justify-between gap-4 px-6 py-5">
+              <h2 className="text-lg font-semibold text-[#F6FAFD]">
+                Recent Sessions
+              </h2>
+
+              <button
+                type="button"
+                className="shrink-0 text-sm font-medium text-[#B3CFE5] transition-colors hover:text-[#F6FAFD]"
+              >
+                View All History
+              </button>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <div className="min-w-[760px]">
+                {/* Table Header */}
+                <div className="grid grid-cols-[2fr_1.1fr_1.1fr_1.5fr_60px] items-center gap-4 bg-[#132c4650] px-6 py-3 text-[11px] font-semibold uppercase tracking-wide text-[#B3CFE5]/80">
+                  <span>Role & Company</span>
+                  <span>Type</span>
+                  <span>Date</span>
+                  <span>Score</span>
+                  <span className="text-center">Actions</span>
+                </div>
+
+                {/* Session 1 */}
+                <div className="grid grid-cols-[2fr_1.1fr_1.1fr_1.5fr_60px] items-center gap-4 px-6 py-4 transition-colors duration-200 hover:bg-[#132c4650]">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#1A3D63] text-[#B3CFE5]">
+                      <Building2 size={17} />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-[#F6FAFD]">
+                        Senior Backend Engineer
+                      </p>
+                      <p className="truncate text-xs text-[#B3CFE5]">
+                        Meta Platforms Inc.
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="w-fit rounded-md bg-[#1A3D63]/60 px-2.5 py-1 text-xs text-[#B3CFE5]">
+                    System Design
+                  </span>
+
+                  <span className="text-sm text-[#B3CFE5]">
+                    Oct 20, 2024
+                  </span>
+
+                  <div className="flex items-center gap-3">
+                    <div className="h-1.5 w-32 overflow-hidden rounded-full bg-[#1A3D63]">
+                      <div
+                        className="h-full rounded-full bg-[#B3CFE5]"
+                        style={{ width: '88%' }}
+                      />
+                    </div>
+
+                    <span className="text-sm font-medium text-[#B3CFE5]">
+                      8.8
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="flex justify-center text-[#B3CFE5] transition-colors hover:text-[#F6FAFD]"
+                  >
+                    <ChevronRight size={19} />
+                  </button>
+                </div>
+
+                {/* Session 2 */}
+                <div className="grid grid-cols-[2fr_1.1fr_1.1fr_1.5fr_60px] items-center gap-4  px-6 py-4 transition-colors duration-200 hover:bg-[#132c4650]">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#1A3D63] text-[#B3CFE5]">
+                      <Building2 size={17} />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-[#F6FAFD]">
+                        Staff Frontend Lead
+                      </p>
+                      <p className="truncate text-xs text-[#B3CFE5]">
+                        Shopify
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="w-fit rounded-md bg-[#1A3D63]/60 px-2.5 py-1 text-xs text-[#B3CFE5]">
+                    Architecture
+                  </span>
+
+                  <span className="text-sm text-[#B3CFE5]">
+                    Oct 18, 2024
+                  </span>
+
+                  <div className="flex items-center gap-3">
+                    <div className="h-1.5 w-32 overflow-hidden rounded-full bg-[#1A3D63]">
+                      <div
+                        className="h-full rounded-full bg-[#B3CFE5]"
+                        style={{ width: '92%' }}
+                      />
+                    </div>
+
+                    <span className="text-sm font-medium text-[#B3CFE5]">
+                      9.2
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="flex justify-center text-[#B3CFE5] transition-colors hover:text-[#F6FAFD]"
+                  >
+                    <ChevronRight size={19} />
+                  </button>
+                </div>
+
+                {/* Session 3 */}
+                <div className="grid grid-cols-[2fr_1.1fr_1.1fr_1.5fr_60px] items-center gap-4  px-6 py-4 transition-colors duration-200 hover:bg-[#132c4650]">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#1A3D63] text-[#B3CFE5]">
+                      <Building2 size={17} />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-[#F6FAFD]">
+                        Lead AI Researcher
+                      </p>
+                      <p className="truncate text-xs text-[#B3CFE5]">
+                        OpenAI
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="w-fit rounded-md bg-[#1A3D63]/60 px-2.5 py-1 text-xs text-[#B3CFE5]">
+                    ML Fundamentals
+                  </span>
+
+                  <span className="text-sm text-[#B3CFE5]">
+                    Oct 15, 2024
+                  </span>
+
+                  <div className="flex items-center gap-3">
+                    <div className="h-1.5 w-32 overflow-hidden rounded-full bg-[#1A3D63]">
+                      <div
+                        className="h-full rounded-full bg-[#B3CFE5]"
+                        style={{ width: '75%' }}
+                      />
+                    </div>
+
+                    <span className="text-sm font-medium text-[#B3CFE5]">
+                      7.5
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="flex justify-center text-[#B3CFE5] transition-colors hover:text-[#F6FAFD]"
+                  >
+                    <ChevronRight size={19} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <footer className="px-4 pb-8 pt-2 sm:px-6 lg:px-8">
+          <div className=" pt-8">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-lg font-semibold text-[#F6FAFD]">
+                  InterviewIQ
+                </p>
+
+                <p className="mt-1 text-xs text-[#B3CFE5]">
+                  © 2026 InterviewIQ. Practice smarter. Interview better.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-[#B3CFE5]">
+                <button
+                  type="button"
+                  className="transition-colors hover:text-[#F6FAFD]"
+                >
+                  Privacy Policy
+                </button>
+
+                <button
+                  type="button"
+                  className="transition-colors hover:text-[#F6FAFD]"
+                >
+                  Terms of Service
+                </button>
+
+                <button
+                  type="button"
+                  className="transition-colors hover:text-[#F6FAFD]"
+                >
+                  Contact Support
+                </button>
+              </div>
+            </div>
+          </div>
+        </footer>
+
+      </SidebarInset >
+    </SidebarProvider >
   )
 }
 
