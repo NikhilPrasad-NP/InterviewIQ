@@ -37,6 +37,7 @@ function AppSidebar() {
       title: 'Interviews',
       path: '/interview',
       icon: Video,
+      end: false,
     },
     {
       title: 'History',
@@ -88,14 +89,22 @@ function AppSidebar() {
 
               return (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    render={<NavLink to={item.path} />}
-                    tooltip={item.title}
-                    className="h-9 text-[#B3CFE5] hover:bg-[#1A3D63] hover:text-[#F6FAFD]"
+                  <NavLink
+                    to={item.path}
+                    end={item.end !== false}
+                    className="group/nav-link"
                   >
-                    <Icon size={18} />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
+                    {({ isActive }) => (
+                      <SidebarMenuButton
+                        isActive={isActive}
+                        tooltip={item.title}
+                        className="h-9 text-[#B3CFE5] hover:bg-[#1A3D63] hover:text-[#F6FAFD]"
+                      >
+                        <Icon size={18} />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    )}
+                  </NavLink>
                 </SidebarMenuItem>
               )
             })}
