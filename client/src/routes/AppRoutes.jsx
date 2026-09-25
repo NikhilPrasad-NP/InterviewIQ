@@ -6,7 +6,7 @@ import RegisterPage from "../pages/RegisterPage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 import AuthRedirectPage from "../pages/AuthRedirectPage";
 import RoleSelectionPage from "../pages/RoleSelectionPage";
-import InterviewPage from "../pages/InterviewPage";
+import InterviewPage from "../pages/interview/InterviewPage";
 import HistoryPage from "../pages/HistoryPage";
 import ProfilePage from "../pages/ProfilePage";
 import NotFoundPage from "../pages/NotFoundPage";

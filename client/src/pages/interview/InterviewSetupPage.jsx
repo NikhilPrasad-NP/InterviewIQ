@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select'
 import AppSidebar from '../dashboard/AppSidebar'
 import { SidebarProvider, SidebarInset, SidebarTrigger, } from '@/components/ui/sidebar'
 
 function InterviewSetupPage() {
+    const navigate = useNavigate()
     const [difficulty, setDifficulty] = useState('intermediate')
     const [duration, setDuration] = useState('30')
     const [jobRole, setJobRole] = useState('')
@@ -13,11 +15,13 @@ function InterviewSetupPage() {
             return
         }
 
-        console.log({
-            jobRole,
-            interviewType,
-            difficulty,
-            duration,
+        navigate('/interview', {
+            state: {
+                jobRole,
+                interviewType,
+                difficulty,
+                duration,
+            },
         })
     }
     return (
