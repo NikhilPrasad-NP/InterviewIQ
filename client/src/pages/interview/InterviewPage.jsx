@@ -1,10 +1,6 @@
 import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import {
-    Mic,
-    MicOff,
-    Volume2,
-    PhoneOff,
+import {Mic,MicOff,Volume2,PhoneOff,
 } from 'lucide-react'
 
 function InterviewPage() {
@@ -12,6 +8,7 @@ function InterviewPage() {
     const navigate = useNavigate()
 
     const {
+        interviewId,
         jobRole,
         interviewType,
         difficulty,

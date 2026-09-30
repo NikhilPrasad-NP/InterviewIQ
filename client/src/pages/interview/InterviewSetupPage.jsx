@@ -1,28 +1,51 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@clerk/react'
+import { createSupabaseClient } from '@/lib/supabase'
+import { createInterview } from '@/lib/interviewService'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select'
 import AppSidebar from '../dashboard/AppSidebar'
 import { SidebarProvider, SidebarInset, SidebarTrigger, } from '@/components/ui/sidebar'
 
 function InterviewSetupPage() {
     const navigate = useNavigate()
+    const { userId, getToken } = useAuth()
+
+    const supabase = useMemo(
+        () => createSupabaseClient(getToken),
+        [getToken]
+    )
     const [difficulty, setDifficulty] = useState('intermediate')
     const [duration, setDuration] = useState('30')
     const [jobRole, setJobRole] = useState('')
     const [interviewType, setInterviewType] = useState('')
-    function handleStartInterview() {
-        if (!jobRole || !interviewType) {
+    async function handleStartInterview() {
+        if (!jobRole || !interviewType || !userId) {
             return
         }
 
-        navigate('/interview', {
-            state: {
-                jobRole,
-                interviewType,
+        try {
+            const interview = await createInterview(supabase, {
+                clerk_user_id: userId,
+                role: jobRole,
+                interview_type: interviewType,
                 difficulty,
-                duration,
-            },
-        })
+                duration: Number(duration),
+                status: 'in_progress',
+            })
+
+            navigate('/interview', {
+                state: {
+                    interviewId: interview.id,
+                    jobRole,
+                    interviewType,
+                    difficulty,
+                    duration,
+                },
+            })
+        } catch (error) {
+            console.error('Error creating interview:', error)
+        }
     }
     return (
         <SidebarProvider>
