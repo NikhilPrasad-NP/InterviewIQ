@@ -1,11 +1,19 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import {Mic,MicOff,Volume2,PhoneOff,
-} from 'lucide-react'
+import { Mic, MicOff, Volume2, PhoneOff, } from 'lucide-react'
+import { useAuth } from '@clerk/react'
+import { createSupabaseClient } from '../../lib/supabase'
 
 function InterviewPage() {
     const location = useLocation()
     const navigate = useNavigate()
+    const { getToken } = useAuth()
+
+    const [question, setQuestion] = useState('Loading your interview question...')
+    const supabase = useMemo(
+        () => createSupabaseClient(getToken),
+        [getToken]
+    )
 
     const {
         interviewId,
@@ -14,6 +22,50 @@ function InterviewPage() {
         difficulty,
         duration,
     } = location.state || {}
+
+    useEffect(() => {
+        async function generateQuestion() {
+            try {
+                const { data, error } = await supabase.functions.invoke(
+                    'generate-question',
+                    {
+                        body: {
+                            interviewId,
+                            jobRole,
+                            interviewType,
+                            difficulty,
+                            duration,
+                            questionNumber: 1,
+                        },
+                    }
+                )
+
+                if (error) throw error
+
+                setQuestion(data.question)
+            } catch (error) {
+                console.error('Error generating question:', error)
+                setQuestion('Unable to generate interview question.')
+            }
+        }
+
+        if (
+            interviewId &&
+            jobRole &&
+            interviewType &&
+            difficulty &&
+            duration
+        ) {
+            generateQuestion()
+        }
+    }, [
+        supabase,
+        interviewId,
+        jobRole,
+        interviewType,
+        difficulty,
+        duration,
+    ])
 
     function handleEndInterview() {
         navigate('/dashboard')
@@ -78,7 +130,7 @@ function InterviewPage() {
 
                     <div className="mt-7">
                         <h1 className="text-2xl font-semibold leading-relaxed text-[#F6FAFD] sm:text-3xl">
-                            Tell me about yourself and your experience.
+                            {question}
                         </h1>
                     </div>
                 </section>
