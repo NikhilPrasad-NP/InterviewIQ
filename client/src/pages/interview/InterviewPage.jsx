@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Mic, MicOff, Volume2, PhoneOff, } from 'lucide-react'
-import { useAuth } from '@clerk/react'
+import { useAuth, useUser } from '@clerk/react'
 import { createSupabaseClient } from '../../lib/supabase'
 
 function InterviewPage() {
     const location = useLocation()
     const navigate = useNavigate()
     const { getToken } = useAuth()
+    const { user } = useUser()
 
     const [question, setQuestion] = useState('Loading your interview question...')
     const supabase = useMemo(
@@ -24,13 +25,28 @@ function InterviewPage() {
     } = location.state || {}
 
     useEffect(() => {
-        async function generateQuestion() {
+        async function loadOrGenerateQuestion() {
             try {
+                const { data: existingQuestion, error: fetchError } = await supabase
+                    .from('questions')
+                    .select('*')
+                    .eq('interview_id', interviewId)
+                    .eq('question_number', 1)
+                    .maybeSingle()
+
+                if (fetchError) throw fetchError
+
+                if (existingQuestion) {
+                    setQuestion(existingQuestion.question)
+                    return
+                }
+
                 const { data, error } = await supabase.functions.invoke(
                     'generate-question',
                     {
                         body: {
                             interviewId,
+                            candidateName: user?.firstName,
                             jobRole,
                             interviewType,
                             difficulty,
@@ -42,10 +58,21 @@ function InterviewPage() {
 
                 if (error) throw error
 
+                const { error: insertError } = await supabase
+                    .from('questions')
+                    .insert({
+                        interview_id: interviewId,
+                        question: data.question,
+                        question_number: 1,
+                    })
+
+
+                if (insertError) throw insertError
+
                 setQuestion(data.question)
             } catch (error) {
-                console.error('Error generating question:', error)
-                setQuestion('Unable to generate interview question.')
+                console.error('Error loading or generating question:', error)
+                setQuestion('Unable to load interview question.')
             }
         }
 
@@ -56,7 +83,7 @@ function InterviewPage() {
             difficulty &&
             duration
         ) {
-            generateQuestion()
+            loadOrGenerateQuestion()
         }
     }, [
         supabase,
@@ -65,6 +92,7 @@ function InterviewPage() {
         interviewType,
         difficulty,
         duration,
+        user,
     ])
 
     function handleEndInterview() {
