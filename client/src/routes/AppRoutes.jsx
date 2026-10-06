@@ -11,6 +11,7 @@ import HistoryPage from "../pages/HistoryPage";
 import ProfilePage from "../pages/ProfilePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import InterviewSetupPage from '../pages/interview/InterviewSetupPage'
+import GeminiTestPage from "../pages/interview/GeminiTestPage";
 import "../lib/supabase";
 
 function AppRoutes() {
@@ -26,6 +27,7 @@ function AppRoutes() {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/interview/setup" element={<InterviewSetupPage />} />
                 <Route path="/interview" element={<InterviewPage />} />
+                <Route path="/gemini-test" element={<GeminiTestPage />} />
                 <Route path="/history" element={<HistoryPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="*" element={<NotFoundPage />} />

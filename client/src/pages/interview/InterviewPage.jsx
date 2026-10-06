@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Mic, MicOff, Volume2, PhoneOff, } from 'lucide-react'
+import { Mic, Volume2, PhoneOff, LoaderCircle, } from 'lucide-react'
 import { useAuth, useUser } from '@clerk/react'
 import { createSupabaseClient } from '../../lib/supabase'
+
 
 function InterviewPage() {
     const location = useLocation()
@@ -10,7 +11,12 @@ function InterviewPage() {
     const { getToken } = useAuth()
     const { user } = useUser()
 
+    
+
+    const [questionId, setQuestionId] = useState(null)
     const [question, setQuestion] = useState('Loading your interview question...')
+    const [interviewState, setInterviewState] = useState('ai-speaking')
+
     const supabase = useMemo(
         () => createSupabaseClient(getToken),
         [getToken]
@@ -38,6 +44,8 @@ function InterviewPage() {
 
                 if (existingQuestion) {
                     setQuestion(existingQuestion.question)
+                    setQuestionId(existingQuestion.id)
+                    setInterviewState('candidate-turn')
                     return
                 }
 
@@ -58,18 +66,22 @@ function InterviewPage() {
 
                 if (error) throw error
 
-                const { error: insertError } = await supabase
+                const { data: insertedQuestion, error: insertError } = await supabase
                     .from('questions')
                     .insert({
                         interview_id: interviewId,
                         question: data.question,
                         question_number: 1,
                     })
+                    .select()
+                    .single()
 
 
                 if (insertError) throw insertError
 
                 setQuestion(data.question)
+                setQuestionId(insertedQuestion.id)
+                setInterviewState('candidate-turn')
             } catch (error) {
                 console.error('Error loading or generating question:', error)
                 setQuestion('Unable to load interview question.')
@@ -94,6 +106,10 @@ function InterviewPage() {
         duration,
         user,
     ])
+
+    
+
+    
 
     function handleEndInterview() {
         navigate('/dashboard')
@@ -171,26 +187,104 @@ function InterviewPage() {
                         </p>
 
                         <p className="mt-1 text-sm text-[#B3CFE5]/70">
-                            Speak naturally. The AI interviewer will listen to your response.
+                            {interviewState === 'ai-speaking' &&
+                                'Please listen to the AI interviewer.'}
+
+                            {interviewState === 'candidate-turn' &&
+                                'It is your turn to answer.'}
+
+                            {interviewState === 'listening' &&
+                                'The interviewer is listening to your response.'}
+
+                            {interviewState === 'processing' &&
+                                'Your response is being processed.'}
                         </p>
                     </div>
 
-                    <div className="flex flex-1 items-center justify-center py-12">
-                        <button
-                            type="button"
-                            className="flex size-20 items-center justify-center rounded-full bg-[#B3CFE5] text-[#0A1832] transition-colors duration-200 hover:bg-[#F6FAFD]"
-                        >
-                            <Mic size={30} />
-                        </button>
+                    <div className="flex flex-1 flex-col items-center justify-center py-12">
+
+                        {interviewState === 'ai-speaking' && (
+                            <>
+                                <div className="flex size-20 items-center justify-center rounded-full bg-[#1A3D63] text-[#B3CFE5]">
+                                    <Volume2 size={30} />
+                                </div>
+
+                                <p className="mt-6 text-base font-medium text-[#F6FAFD]">
+                                    AI is speaking...
+                                </p>
+
+                                <div className="mt-3 flex items-center gap-1">
+                                    <span className="size-2 animate-pulse rounded-full bg-[#B3CFE5]" />
+                                    <span className="size-2 animate-pulse rounded-full bg-[#B3CFE5] [animation-delay:150ms]" />
+                                    <span className="size-2 animate-pulse rounded-full bg-[#B3CFE5] [animation-delay:300ms]" />
+                                </div>
+                            </>
+                        )}
+
+                        {interviewState === 'candidate-turn' && (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={() => setInterviewState('listening')}
+                                    className="flex size-20 items-center justify-center rounded-full bg-[#B3CFE5] text-[#0A1832] transition-colors duration-200 hover:bg-[#F6FAFD]"
+                                >
+                                    <Mic size={30} />
+                                </button>
+
+                                <p className="mt-6 text-base font-medium text-[#F6FAFD]">
+                                    Your turn to answer
+                                </p>
+
+                                <p className="mt-2 text-sm text-[#B3CFE5]/60">
+                                    Click the microphone to start speaking
+                                </p>
+                            </>
+                        )}
+
+                        {interviewState === 'listening' && (
+                            <>
+                                <button
+                                    type="button"
+                                    className="flex size-20 items-center justify-center rounded-full bg-red-500 text-white transition-transform duration-200 hover:scale-105"
+                                >
+                                    <Mic size={30} />
+                                </button>
+
+                                <p className="mt-6 text-base font-medium text-[#F6FAFD]">
+                                    Listening...
+                                </p>
+                                
+
+                                <p className="mt-2 text-sm text-[#B3CFE5]/60">
+                                    Speak naturally. Your response will be detected automatically.
+                                </p>
+                            </>
+                        )}
+
+                        {interviewState === 'processing' && (
+                            <>
+                                <div className="flex size-20 items-center justify-center rounded-full bg-[#1A3D63] text-[#B3CFE5]">
+                                    <LoaderCircle
+                                        size={30}
+                                        className="animate-spin"
+                                    />
+                                </div>
+
+                                <p className="mt-6 text-base font-medium text-[#F6FAFD]">
+                                    Processing your response...
+                                </p>
+
+                                <p className="mt-2 text-sm text-[#B3CFE5]/60">
+                                    Preparing the next part of your interview.
+                                </p>
+                            </>
+                        )}
+
                     </div>
 
                     <div className="text-center">
-                        <p className="text-sm font-medium text-[#B3CFE5]">
-                            Tap the microphone to answer
-                        </p>
-
-                        <p className="mt-1 text-xs text-[#B3CFE5]/50">
-                            Voice input will be connected next
+                        <p className="text-xs text-[#B3CFE5]/50">
+                            Voice conversation will be connected next.
                         </p>
                     </div>
                 </section>
