@@ -1,68 +1,21 @@
-import React, { useRef, useState } from 'react'
-import { createGeminiLiveSession } from '../../lib/geminiLive'
-import createVoiceAudio from '../../lib/voiceAudio'
+import React, { useState } from 'react'
+import useVoiceInterview from '../../hooks/useVoiceInterview'
 
 function GeminiTestPage() {
   const [status, setStatus] = useState('Not connected')
-  const [session, setSession] = useState(null)
   const [micStatus, setMicStatus] = useState('Microphone off')
-  const mediaStreamRef = useRef(null)
-  const audioContextRef = useRef(null)
-const processorRef = useRef(null)
-const voiceAudioRef = useRef(null)
 
-  async function handleMicrophone() {
-  try {
-    setMicStatus('Requesting microphone...')
-
-    const voiceAudio = createVoiceAudio()
-    voiceAudioRef.current = voiceAudio
-
-    const result = await voiceAudio.start((pcm16) => {
-      console.log(
-        '16-bit PCM:',
-        pcm16.length,
-        'samples at 16000 Hz',
-        `${pcm16.byteLength} bytes`
-      )
-
-      if (session) {
-        const bytes = new Uint8Array(pcm16.buffer)
-
-        let binary = ''
-
-        for (let i = 0; i < bytes.length; i++) {
-          binary += String.fromCharCode(bytes[i])
-        }
-
-        const base64Audio = btoa(binary)
-
-        session.sendRealtimeInput({
-          audio: {
-            data: base64Audio,
-            mimeType: 'audio/pcm;rate=16000',
-          },
-        })
-      }
-    })
-
-    setMicStatus('Microphone PCM capture working 🎤')
-
-    console.log('Microphone stream:', result.stream)
-    console.log('Audio sample rate:', result.sampleRate)
-  } catch (error) {
-    console.error('Microphone error:', error)
-    setMicStatus('Microphone access failed')
-  }
-}
+  const {
+    connect,
+    startMicrophone,
+  } = useVoiceInterview()
 
   async function handleConnect() {
     try {
       setStatus('Connecting...')
 
-      const liveSession = await createGeminiLiveSession()
+      await connect()
 
-      setSession(liveSession)
       setStatus('Connected to Gemini')
     } catch (error) {
       console.error('Gemini connection error:', error)
@@ -70,25 +23,18 @@ const voiceAudioRef = useRef(null)
     }
   }
 
-  function handleSend() {
-  if (!session) return
+  async function handleMicrophone() {
+    try {
+      setMicStatus('Starting microphone...')
 
-  session.sendClientContent({
-    turns: [
-      {
-        role: 'user',
-        parts: [
-          {
-            text: 'Hello. Please introduce yourself as a professional interviewer.',
-          },
-        ],
-      },
-    ],
-    turnComplete: true,
-  })
+      await startMicrophone()
 
-  setStatus('Message sent. Check the browser console.')
-}
+      setMicStatus('Microphone PCM capture working 🎤')
+    } catch (error) {
+      console.error('Microphone error:', error)
+      setMicStatus('Microphone access failed')
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#0A1832] p-10 text-[#F6FAFD]">
@@ -99,9 +45,10 @@ const voiceAudioRef = useRef(null)
       <p className="mt-4 text-[#B3CFE5]">
         Status: {status}
       </p>
+
       <p className="mt-4 text-[#B3CFE5]">
-  {micStatus}
-</p>
+        {micStatus}
+      </p>
 
       <div className="mt-8 flex gap-4">
         <button
@@ -114,19 +61,11 @@ const voiceAudioRef = useRef(null)
 
         <button
           type="button"
-          onClick={handleSend}
-          disabled={!session}
-          className="rounded-lg bg-[#1A3D63] px-5 py-3 disabled:opacity-50"
+          onClick={handleMicrophone}
+          className="rounded-lg bg-[#4A7FA7] px-5 py-3"
         >
-          Send Test Message
+          Test Microphone
         </button>
-        <button
-  type="button"
-  onClick={handleMicrophone}
-  className="rounded-lg bg-[#4A7FA7] px-5 py-3"
->
-  Test Microphone
-</button>
       </div>
     </div>
   )
