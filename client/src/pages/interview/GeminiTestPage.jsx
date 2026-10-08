@@ -6,9 +6,21 @@ function GeminiTestPage() {
   const [micStatus, setMicStatus] = useState('Microphone off')
 
   const {
-    connect,
-    startMicrophone,
-  } = useVoiceInterview()
+  connect,
+  startMicrophone,
+  mute,
+  unmute,
+  isMuted,
+  isListening,
+} = useVoiceInterview()
+
+  function handleMuteToggle() {
+  if (isMuted) {
+    unmute()
+  } else {
+    mute()
+  }
+}
 
   async function handleConnect() {
     try {
@@ -66,6 +78,14 @@ function GeminiTestPage() {
         >
           Test Microphone
         </button>
+        <button
+  type="button"
+  onClick={handleMuteToggle}
+  disabled={!isListening}
+  className="rounded-lg bg-[#B3CFE5] px-5 py-3 text-[#0A1832] disabled:cursor-not-allowed disabled:opacity-40"
+>
+  {isMuted ? 'Unmute' : 'Mute'}
+</button>
       </div>
     </div>
   )

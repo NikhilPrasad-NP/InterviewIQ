@@ -5,9 +5,11 @@ import createVoiceAudio from '../lib/voiceAudio'
 function useVoiceInterview() {
   const sessionRef = useRef(null)
   const voiceAudioRef = useRef(null)
+  const mutedRef = useRef(false)
 
   const [isConnected, setIsConnected] = useState(false)
   const [isListening, setIsListening] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
 
   async function connect() {
     try {
@@ -36,6 +38,7 @@ function useVoiceInterview() {
 
       await voiceAudio.start((pcm16) => {
         if (!sessionRef.current) return
+        if (mutedRef.current) return
 
         const bytes = new Uint8Array(pcm16.buffer)
 
@@ -62,6 +65,16 @@ function useVoiceInterview() {
     }
   }
 
+  function mute() {
+    mutedRef.current = true
+    setIsMuted(true)
+  }
+
+  function unmute() {
+    mutedRef.current = false
+    setIsMuted(false)
+  }
+
   async function stop() {
     if (voiceAudioRef.current) {
       await voiceAudioRef.current.stop()
@@ -69,17 +82,22 @@ function useVoiceInterview() {
     }
 
     sessionRef.current = null
+    mutedRef.current = false
 
     setIsListening(false)
     setIsConnected(false)
+    setIsMuted(false)
   }
 
   return {
     connect,
     startMicrophone,
+    mute,
+    unmute,
     stop,
     isConnected,
     isListening,
+    isMuted,
   }
 }
 

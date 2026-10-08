@@ -3,9 +3,17 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Mic, Volume2, PhoneOff, LoaderCircle, } from 'lucide-react'
 import { useAuth, useUser } from '@clerk/react'
 import { createSupabaseClient } from '../../lib/supabase'
+import useVoiceInterview from '../../hooks/useVoiceInterview'
 
 
 function InterviewPage() {
+    const {
+  connect,
+  startMicrophone,
+  stop,
+  isConnected,
+  isListening,
+} = useVoiceInterview()
     const location = useLocation()
     const navigate = useNavigate()
     const { getToken } = useAuth()
