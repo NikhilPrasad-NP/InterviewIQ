@@ -1,9 +1,11 @@
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { createGeminiLiveSession } from '../lib/geminiLive'
 import createVoiceAudio from '../lib/voiceAudio'
+import { sendInterviewQuestion } from '../lib/geminiLive'
 
 function useVoiceInterview() {
   const sessionRef = useRef(null)
+  const connectPromiseRef = useRef(null)
   const voiceAudioRef = useRef(null)
   const mutedRef = useRef(false)
 
@@ -11,36 +13,57 @@ function useVoiceInterview() {
   const [isListening, setIsListening] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
 
-  async function connect() {
-    try {
-      const session = await createGeminiLiveSession()
-
-      sessionRef.current = session
-
-      setIsConnected(true)
-
-      return session
-    } catch (error) {
-      console.error('Gemini connection error:', error)
-      throw error
+  const connect = useCallback(async () => {
+    if (sessionRef.current) {
+      return sessionRef.current
     }
-  }
 
-  async function startMicrophone() {
+    if (connectPromiseRef.current) {
+      return connectPromiseRef.current
+    }
+
+    const connectionPromise = (async () => {
+      try {
+        const session = await createGeminiLiveSession()
+
+        sessionRef.current = session
+        setIsConnected(true)
+
+        return session
+      } catch (error) {
+        console.error('Gemini connection error:', error)
+        throw error
+      } finally {
+        connectPromiseRef.current = null
+      }
+    })()
+
+    connectPromiseRef.current = connectionPromise
+
+    return connectionPromise
+  }, [])
+
+  const startMicrophone = useCallback(async () => {
     try {
       if (!sessionRef.current) {
         throw new Error('Gemini session is not connected')
       }
 
-      const voiceAudio = createVoiceAudio()
+      if (voiceAudioRef.current) {
+        return
+      }
 
+      const voiceAudio = createVoiceAudio()
       voiceAudioRef.current = voiceAudio
 
       await voiceAudio.start((pcm16) => {
-        if (!sessionRef.current) return
-        if (mutedRef.current) return
+        if (!sessionRef.current || mutedRef.current) return
 
-        const bytes = new Uint8Array(pcm16.buffer)
+        const bytes = new Uint8Array(
+          pcm16.buffer,
+          pcm16.byteOffset,
+          pcm16.byteLength
+        )
 
         let binary = ''
 
@@ -63,19 +86,27 @@ function useVoiceInterview() {
       console.error('Microphone error:', error)
       throw error
     }
-  }
+  }, [])
 
-  function mute() {
+  const mute = useCallback(() => {
     mutedRef.current = true
     setIsMuted(true)
-  }
+  }, [])
 
-  function unmute() {
+  const unmute = useCallback(() => {
     mutedRef.current = false
     setIsMuted(false)
+  }, [])
+
+  const sendQuestion = useCallback((question) => {
+  if (!sessionRef.current) {
+    throw new Error('Gemini session is not connected')
   }
 
-  async function stop() {
+  sendInterviewQuestion(sessionRef.current, question)
+}, [])
+
+  const stop = useCallback(async () => {
     if (voiceAudioRef.current) {
       await voiceAudioRef.current.stop()
       voiceAudioRef.current = null
@@ -87,18 +118,19 @@ function useVoiceInterview() {
     setIsListening(false)
     setIsConnected(false)
     setIsMuted(false)
-  }
+  }, [])
 
   return {
-    connect,
-    startMicrophone,
-    mute,
-    unmute,
-    stop,
-    isConnected,
-    isListening,
-    isMuted,
-  }
+  connect,
+  startMicrophone,
+  sendQuestion,
+  mute,
+  unmute,
+  stop,
+  isConnected,
+  isListening,
+  isMuted,
+}
 }
 
 export default useVoiceInterview

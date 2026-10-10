@@ -100,8 +100,11 @@ await audioPlayer.initialize()
   const { token } = await response.json()
 
   const ai = new GoogleGenAI({
-    apiKey: token,
-  })
+  apiKey: token,
+  httpOptions: {
+    apiVersion: 'v1alpha',
+  },
+})
 
   const session = await ai.live.connect({
     model: 'gemini-3.8-live',
@@ -141,4 +144,25 @@ await audioPlayer.initialize()
   })
 
   return session
+}
+
+export function sendInterviewQuestion(session, question) {
+  session.sendClientContent({
+    turns: [
+      {
+        role: 'user',
+        parts: [
+          {
+            text: `You are a professional interviewer conducting a voice interview.
+
+Ask the candidate this exact interview question aloud:
+"${question}"
+
+Do not change, rephrase, or add to the question. Speak naturally, then wait for the candidate's answer.`,
+          },
+        ],
+      },
+    ],
+    turnComplete: true,
+  })
 }

@@ -1,15 +1,17 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Mic, Volume2, PhoneOff, LoaderCircle, } from 'lucide-react'
 import { useAuth, useUser } from '@clerk/react'
 import { createSupabaseClient } from '../../lib/supabase'
 import useVoiceInterview from '../../hooks/useVoiceInterview'
+import { sendInterviewQuestion } from '../../lib/geminiLive'
 
 
 function InterviewPage() {
     const {
   connect,
   startMicrophone,
+  sendQuestion,
   stop,
   isConnected,
   isListening,
@@ -18,7 +20,8 @@ function InterviewPage() {
     const navigate = useNavigate()
     const { getToken } = useAuth()
     const { user } = useUser()
-
+    const questionSentRef = useRef(false)
+    const questionLoadStartedRef = useRef(false)
     
 
     const [questionId, setQuestionId] = useState(null)
@@ -39,7 +42,20 @@ function InterviewPage() {
     } = location.state || {}
 
     useEffect(() => {
-        async function loadOrGenerateQuestion() {
+    if (
+        !interviewId ||
+        !jobRole ||
+        !interviewType ||
+        !difficulty ||
+        !duration ||
+        questionLoadStartedRef.current
+    ) {
+        return
+    }
+
+    questionLoadStartedRef.current = true
+
+    async function loadOrGenerateQuestion() {
             try {
                 const { data: existingQuestion, error: fetchError } = await supabase
                     .from('questions')
@@ -115,6 +131,65 @@ function InterviewPage() {
         user,
     ])
 
+    useEffect(() => {
+    async function connectVoice() {
+        try {
+            await connect()
+        } catch (error) {
+            console.error('Error connecting voice interview:', error)
+        }
+    }
+
+    if (interviewId) {
+        connectVoice()
+    }
+}, [interviewId, connect])
+
+useEffect(() => {
+  if (
+    !isConnected ||
+    !questionId ||
+    !question ||
+    question === 'Loading your interview question...' ||
+    question === 'Unable to load interview question.' ||
+    questionSentRef.current
+  ) {
+    return
+  }
+
+  try {
+    sendQuestion(question)
+    questionSentRef.current = true
+    setInterviewState('ai-speaking')
+    console.log('Interview question sent to Gemini:', question)
+  } catch (error) {
+    console.error('Error sending interview question:', error)
+  }
+}, [isConnected, questionId, question, sendQuestion])
+
+useEffect(() => {
+  if (
+    !isConnected ||
+    !questionId ||
+    !question ||
+    question === 'Loading your interview question...' ||
+    question === 'Unable to load interview question.' ||
+    questionSentRef.current
+  ) {
+    return
+  }
+
+  // Prevent sending the same question more than once.
+  questionSentRef.current = true
+
+  try {
+    // We will expose the connected session from the hook next.
+    // Don't send anything until the hook provides that session.
+  } catch (error) {
+    questionSentRef.current = false
+    console.error('Error sending interview question:', error)
+  }
+}, [isConnected, questionId, question])
     
 
     
