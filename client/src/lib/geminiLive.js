@@ -72,7 +72,7 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 const GEMINI_TOKEN_URL =
   'https://fwzbjteklwpxbonyedhz.supabase.co/functions/v1/gemini-token'
 
-export async function createGeminiLiveSession() {
+export async function createGeminiLiveSession({ onTurnComplete } = {}) {
   const audioPlayer = createAudioPlayer()
 await audioPlayer.initialize()
   const response = await fetch( `${SUPABASE_URL}/functions/v1/gemini-token`, 
@@ -129,8 +129,9 @@ await audioPlayer.initialize()
   }
 
   if (message.serverContent?.turnComplete) {
-    console.log('Gemini finished speaking')
-  }
+  console.log('Gemini finished speaking')
+  onTurnComplete?.()
+}
 },
 
       onerror(error) {

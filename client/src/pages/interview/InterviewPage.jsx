@@ -12,9 +12,13 @@ function InterviewPage() {
   connect,
   startMicrophone,
   sendQuestion,
+  setOnTurnComplete,
+  mute,
+  unmute,
   stop,
   isConnected,
   isListening,
+  isMuted,
 } = useVoiceInterview()
     const location = useLocation()
     const navigate = useNavigate()
@@ -144,6 +148,16 @@ function InterviewPage() {
         connectVoice()
     }
 }, [interviewId, connect])
+
+useEffect(() => {
+  setOnTurnComplete(() => {
+    setInterviewState((currentState) =>
+      currentState === 'ai-speaking'
+        ? 'candidate-turn'
+        : currentState
+    )
+  })
+}, [setOnTurnComplete])
 
 useEffect(() => {
   if (
@@ -308,10 +322,31 @@ useEffect(() => {
                             <>
                                 <button
                                     type="button"
-                                    onClick={() => setInterviewState('listening')}
+                                    onClick={async () => {
+  try {
+    if (!isConnected) {
+      console.error('Gemini is not connected yet.')
+      return
+    }
+
+    if (isMuted) {
+      unmute()
+      setInterviewState('listening')
+    } else if (isListening) {
+      mute()
+      setInterviewState('candidate-turn')
+    } else {
+      await startMicrophone()
+      unmute()
+      setInterviewState('listening')
+    }
+  } catch (error) {
+    console.error('Microphone error:', error)
+  }
+}}
                                     className="flex size-20 items-center justify-center rounded-full bg-[#B3CFE5] text-[#0A1832] transition-colors duration-200 hover:bg-[#F6FAFD]"
                                 >
-                                    <Mic size={30} />
+                                    {isListening ? <Mic size={30} /> : <Mic size={30} />}
                                 </button>
 
                                 <p className="mt-6 text-base font-medium text-[#F6FAFD]">
@@ -325,24 +360,27 @@ useEffect(() => {
                         )}
 
                         {interviewState === 'listening' && (
-                            <>
-                                <button
-                                    type="button"
-                                    className="flex size-20 items-center justify-center rounded-full bg-red-500 text-white transition-transform duration-200 hover:scale-105"
-                                >
-                                    <Mic size={30} />
-                                </button>
+    <>
+        <button
+            type="button"
+            onClick={() => {
+                mute()
+                setInterviewState('candidate-turn')
+            }}
+            className="flex size-20 items-center justify-center rounded-full bg-red-500 text-white transition-transform duration-200 hover:scale-105"
+        >
+            <Mic size={30} />
+        </button>
 
-                                <p className="mt-6 text-base font-medium text-[#F6FAFD]">
-                                    Listening...
-                                </p>
-                                
+        <p className="mt-6 text-base font-medium text-[#F6FAFD]">
+            Listening...
+        </p>
 
-                                <p className="mt-2 text-sm text-[#B3CFE5]/60">
-                                    Speak naturally. Your response will be detected automatically.
-                                </p>
-                            </>
-                        )}
+        <p className="mt-2 text-sm text-[#B3CFE5]/60">
+            Click the microphone to mute and stop sending audio.
+        </p>
+    </>
+)}  
 
                         {interviewState === 'processing' && (
                             <>

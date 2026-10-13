@@ -8,6 +8,7 @@ function useVoiceInterview() {
   const connectPromiseRef = useRef(null)
   const voiceAudioRef = useRef(null)
   const mutedRef = useRef(false)
+  const turnCompleteCallbackRef = useRef(null)
 
   const [isConnected, setIsConnected] = useState(false)
   const [isListening, setIsListening] = useState(false)
@@ -24,7 +25,11 @@ function useVoiceInterview() {
 
     const connectionPromise = (async () => {
       try {
-        const session = await createGeminiLiveSession()
+        const session = await createGeminiLiveSession({
+  onTurnComplete: () => {
+    turnCompleteCallbackRef.current?.()
+  },
+})
 
         sessionRef.current = session
         setIsConnected(true)
@@ -89,14 +94,14 @@ function useVoiceInterview() {
   }, [])
 
   const mute = useCallback(() => {
-    mutedRef.current = true
-    setIsMuted(true)
-  }, [])
+  mutedRef.current = true
+  setIsMuted(true)
+}, [])
 
-  const unmute = useCallback(() => {
-    mutedRef.current = false
-    setIsMuted(false)
-  }, [])
+const unmute = useCallback(() => {
+  mutedRef.current = false
+  setIsMuted(false)
+}, [])
 
   const sendQuestion = useCallback((question) => {
   if (!sessionRef.current) {
@@ -104,6 +109,10 @@ function useVoiceInterview() {
   }
 
   sendInterviewQuestion(sessionRef.current, question)
+}, [])
+
+const setOnTurnComplete = useCallback((callback) => {
+  turnCompleteCallbackRef.current = callback
 }, [])
 
   const stop = useCallback(async () => {
@@ -124,6 +133,7 @@ function useVoiceInterview() {
   connect,
   startMicrophone,
   sendQuestion,
+  setOnTurnComplete,
   mute,
   unmute,
   stop,
