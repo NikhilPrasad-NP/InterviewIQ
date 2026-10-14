@@ -4,7 +4,7 @@ import { Mic, Volume2, PhoneOff, LoaderCircle, } from 'lucide-react'
 import { useAuth, useUser } from '@clerk/react'
 import { createSupabaseClient } from '../../lib/supabase'
 import useVoiceInterview from '../../hooks/useVoiceInterview'
-import { sendInterviewQuestion } from '../../lib/geminiLive'
+
 
 
 function InterviewPage() {
@@ -13,6 +13,7 @@ function InterviewPage() {
   startMicrophone,
   sendQuestion,
   setOnTurnComplete,
+  setOnOutputTranscription,
   mute,
   unmute,
   stop,
@@ -26,24 +27,21 @@ function InterviewPage() {
     const { user } = useUser()
     const questionSentRef = useRef(false)
     const questionLoadStartedRef = useRef(false)
+    const outputTranscriptionRef = useRef('')
     
 
     const [questionId, setQuestionId] = useState(null)
     const [question, setQuestion] = useState('Loading your interview question...')
     const [interviewState, setInterviewState] = useState('ai-speaking')
+    const {interviewId,jobRole,interviewType,difficulty,duration,} = location.state || {}
+    const [timeLeft, setTimeLeft] = useState(Math.max(1, Number(duration) || 30) * 60)
+    const endingRef = useRef(false)
 
     const supabase = useMemo(
         () => createSupabaseClient(getToken),
         [getToken]
     )
 
-    const {
-        interviewId,
-        jobRole,
-        interviewType,
-        difficulty,
-        duration,
-    } = location.state || {}
 
     useEffect(() => {
     if (
@@ -160,6 +158,18 @@ useEffect(() => {
 }, [setOnTurnComplete])
 
 useEffect(() => {
+  setOnOutputTranscription((text) => {
+    outputTranscriptionRef.current += text
+
+    const spokenText = outputTranscriptionRef.current.trim()
+
+    if (spokenText) {
+      setQuestion(spokenText)
+    }
+  })
+}, [setOnOutputTranscription])
+
+useEffect(() => {
   if (
     !isConnected ||
     !questionId ||
@@ -182,35 +192,56 @@ useEffect(() => {
 }, [isConnected, questionId, question, sendQuestion])
 
 useEffect(() => {
-  if (
-    !isConnected ||
-    !questionId ||
-    !question ||
-    question === 'Loading your interview question...' ||
-    question === 'Unable to load interview question.' ||
-    questionSentRef.current
-  ) {
-    return
+  return () => {
+    void stop()
   }
+}, [stop])
 
-  // Prevent sending the same question more than once.
-  questionSentRef.current = true
+
+async function handleEndInterview() {
+  if (endingRef.current && timeLeft !== 0) return
+
+  endingRef.current = true
 
   try {
-    // We will expose the connected session from the hook next.
-    // Don't send anything until the hook provides that session.
-  } catch (error) {
-    questionSentRef.current = false
-    console.error('Error sending interview question:', error)
-  }
-}, [isConnected, questionId, question])
-    
+    await stop()
 
-    
+    if (interviewId) {
+      const { error } = await supabase
+        .from('interviews')
+        .update({ status: 'completed' })
+        .eq('id', interviewId)
 
-    function handleEndInterview() {
-        navigate('/dashboard')
+      if (error) throw error
     }
+
+    navigate('/dashboard')
+  } catch (error) {
+    console.error('Error ending interview:', error)
+  }
+}
+
+useEffect(() => {
+  const timer = setInterval(() => {
+    setTimeLeft((previous) => {
+      if (previous <= 1) {
+        clearInterval(timer)
+        return 0
+      }
+
+      return previous - 1
+    })
+  }, 1000)
+
+  return () => clearInterval(timer)
+}, [])
+
+useEffect(() => {
+  if (timeLeft === 0 && !endingRef.current) {
+    endingRef.current = true
+    void handleEndInterview()
+  }
+}, [timeLeft])
 
     return (
         <div className="min-h-screen bg-[#061126] text-[#F6FAFD]">
@@ -228,7 +259,11 @@ useEffect(() => {
                     </div>
 
                     <div className="rounded-lg border border-[#1A3D63] bg-[#061126] px-4 py-2 text-sm font-medium text-[#B3CFE5]">
-                        30:00
+                        {`${Math.floor(timeLeft / 60)
+                        .toString()
+                        .padStart(2, '0')}:${(timeLeft % 60)
+                        .toString()
+                        .padStart(2, '0')}`}
                     </div>
                 </div>
             </header>

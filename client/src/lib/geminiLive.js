@@ -72,7 +72,7 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 const GEMINI_TOKEN_URL =
   'https://fwzbjteklwpxbonyedhz.supabase.co/functions/v1/gemini-token'
 
-export async function createGeminiLiveSession({ onTurnComplete } = {}) {
+export async function createGeminiLiveSession({ onTurnComplete, onInputTranscription, onOutputTranscription, } = {}) {
   const audioPlayer = createAudioPlayer()
 await audioPlayer.initialize()
   const response = await fetch( `${SUPABASE_URL}/functions/v1/gemini-token`, 
@@ -109,14 +109,35 @@ await audioPlayer.initialize()
   const session = await ai.live.connect({
     model: 'gemini-3.8-live',
     config: {
-      responseModalities: [Modality.AUDIO],
-    },
+    responseModalities: [Modality.AUDIO],
+    inputAudioTranscription: {},
+    outputAudioTranscription: {},
+  },
     callbacks: {
       onopen() {
         console.log('Gemini Live connected')
       },
 
       onmessage(message) {
+  // Capture the candidate's spoken answer as text.
+  const transcription = message.serverContent?.inputTranscription?.text
+
+  if (transcription) {
+    console.log('Candidate said:', transcription)
+    onInputTranscription?.(transcription)
+  }
+
+  const serverContent = message.serverContent
+
+if (serverContent?.modelTurn) {
+  const outputTranscription = serverContent.outputTranscription?.text
+
+  if (outputTranscription) {
+    console.log('Gemini said:', outputTranscription)
+    onOutputTranscription?.(outputTranscription)
+  }
+}
+
   const parts = message.serverContent?.modelTurn?.parts || []
 
   for (const part of parts) {
@@ -144,7 +165,16 @@ await audioPlayer.initialize()
     },
   })
 
-  return session
+  return {
+  session,
+  close: async () => {
+    try {
+      session.close()
+    } finally {
+      await audioPlayer.close()
+    }
+  },
+}
 }
 
 export function sendInterviewQuestion(session, question) {
