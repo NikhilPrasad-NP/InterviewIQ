@@ -36,6 +36,7 @@ function InterviewPage() {
     const {interviewId,jobRole,interviewType,difficulty,duration,} = location.state || {}
     const [timeLeft, setTimeLeft] = useState(Math.max(1, Number(duration) || 30) * 60)
     const endingRef = useRef(false)
+    
 
     const supabase = useMemo(
         () => createSupabaseClient(getToken),
@@ -158,14 +159,14 @@ useEffect(() => {
 }, [setOnTurnComplete])
 
 useEffect(() => {
-  setOnOutputTranscription((text) => {
+  setOnOutputTranscription((text, metadata) => {
+    if (metadata?.isNewTurn) {
+      outputTranscriptionRef.current = ''
+    }
+
     outputTranscriptionRef.current += text
 
-    const spokenText = outputTranscriptionRef.current.trim()
-
-    if (spokenText) {
-      setQuestion(spokenText)
-    }
+    setQuestion(outputTranscriptionRef.current.trim())
   })
 }, [setOnOutputTranscription])
 

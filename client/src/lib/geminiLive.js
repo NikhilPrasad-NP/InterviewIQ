@@ -106,6 +106,8 @@ await audioPlayer.initialize()
   },
 })
 
+  let outputTurnStarted = false
+
   const session = await ai.live.connect({
     model: 'gemini-3.8-live',
     config: {
@@ -119,26 +121,35 @@ await audioPlayer.initialize()
       },
 
       onmessage(message) {
-  // Capture the candidate's spoken answer as text.
-  const transcription = message.serverContent?.inputTranscription?.text
+  const serverContent = message.serverContent
+
+  // Capture the candidate's spoken answer.
+  const transcription = serverContent?.inputTranscription?.text
 
   if (transcription) {
     console.log('Candidate said:', transcription)
     onInputTranscription?.(transcription)
   }
 
-  const serverContent = message.serverContent
-
-if (serverContent?.modelTurn) {
-  const outputTranscription = serverContent.outputTranscription?.text
+  // Capture the AI's spoken response.
+  const outputTranscription = serverContent?.outputTranscription?.text
+  const turnComplete = serverContent?.turnComplete ?? false
 
   if (outputTranscription) {
-    console.log('Gemini said:', outputTranscription)
-    onOutputTranscription?.(outputTranscription)
-  }
-}
+    const isNewTurn = !outputTurnStarted
 
-  const parts = message.serverContent?.modelTurn?.parts || []
+    console.log('Gemini said:', outputTranscription)
+
+    onOutputTranscription?.(outputTranscription, {
+      isNewTurn,
+      turnComplete,
+    })
+
+    outputTurnStarted = true
+  }
+
+  // Play the AI's audio response.
+  const parts = serverContent?.modelTurn?.parts || []
 
   for (const part of parts) {
     if (
@@ -149,10 +160,12 @@ if (serverContent?.modelTurn) {
     }
   }
 
-  if (message.serverContent?.turnComplete) {
-  console.log('Gemini finished speaking')
-  onTurnComplete?.()
-}
+  // Detect when the AI finishes its response.
+  if (turnComplete) {
+    console.log('Gemini finished speaking')
+    onTurnComplete?.()
+    outputTurnStarted = false
+  }
 },
 
       onerror(error) {

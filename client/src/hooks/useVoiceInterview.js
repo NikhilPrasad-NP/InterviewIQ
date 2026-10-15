@@ -44,8 +44,8 @@ function useVoiceInterview() {
     setTranscript(transcriptBufferRef.current)
     transcriptCallbackRef.current?.(text)
   },
-  onOutputTranscription: (text) => {
-  outputTranscriptionCallbackRef.current?.(text)
+  onOutputTranscription: (text, metadata) => {
+  outputTranscriptionCallbackRef.current?.(text, metadata)
 },
 })
 
