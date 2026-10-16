@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Mic, Volume2, PhoneOff, LoaderCircle, } from 'lucide-react'
 import { useAuth, useUser } from '@clerk/react'
 import { createSupabaseClient } from '../../lib/supabase'
+import { createAnswer } from '../../lib/answerService'
 import useVoiceInterview from '../../hooks/useVoiceInterview'
 
 
@@ -13,6 +14,7 @@ function InterviewPage() {
   startMicrophone,
   sendQuestion,
   setOnTurnComplete,
+  setOnTranscript,
   setOnOutputTranscription,
   mute,
   unmute,
@@ -28,9 +30,16 @@ function InterviewPage() {
     const questionSentRef = useRef(false)
     const questionLoadStartedRef = useRef(false)
     const outputTranscriptionRef = useRef('')
+    const savedAnswerQuestionIdsRef = useRef(new Set())
+    const questionNumberRef = useRef(1)
+    const activeQuestionIdRef = useRef(null)
+    const savingQuestionRef = useRef(false)
     
 
     const [questionId, setQuestionId] = useState(null)
+    useEffect(() => {
+  activeQuestionIdRef.current = questionId
+}, [questionId])
     const [question, setQuestion] = useState('Loading your interview question...')
     const [interviewState, setInterviewState] = useState('ai-speaking')
     const {interviewId,jobRole,interviewType,difficulty,duration,} = location.state || {}
@@ -72,6 +81,8 @@ function InterviewPage() {
                 if (existingQuestion) {
                     setQuestion(existingQuestion.question)
                     setQuestionId(existingQuestion.id)
+                    activeQuestionIdRef.current = existingQuestion.id
+                    questionNumberRef.current = existingQuestion.question_number || 1
                     setInterviewState('candidate-turn')
                     return
                 }
@@ -108,6 +119,8 @@ function InterviewPage() {
 
                 setQuestion(data.question)
                 setQuestionId(insertedQuestion.id)
+                activeQuestionIdRef.current = insertedQuestion.id
+                questionNumberRef.current = insertedQuestion.question_number || 1
                 setInterviewState('candidate-turn')
             } catch (error) {
                 console.error('Error loading or generating question:', error)
@@ -159,16 +172,104 @@ useEffect(() => {
 }, [setOnTurnComplete])
 
 useEffect(() => {
+  setOnTranscript((text) => {
+    const answerText = text.trim()
+    const currentQuestionId = activeQuestionIdRef.current
+
+    if (!answerText || !currentQuestionId) {
+      return
+    }
+
+    if (savedAnswerQuestionIdsRef.current.has(currentQuestionId)) {
+      return
+    }
+
+    savedAnswerQuestionIdsRef.current.add(currentQuestionId)
+
+    void (async () => {
+      try {
+        const savedAnswer = await createAnswer(supabase, {
+          question_id: currentQuestionId,
+          answer_text: answerText,
+        })
+
+        console.log('Answer saved successfully:', savedAnswer)
+      } catch (error) {
+        savedAnswerQuestionIdsRef.current.delete(currentQuestionId)
+        console.error('Failed to save interview answer:', error)
+      }
+    })()
+  })
+}, [setOnTranscript, supabase])
+
+useEffect(() => {
   setOnOutputTranscription((text, metadata) => {
     if (metadata?.isNewTurn) {
       outputTranscriptionRef.current = ''
     }
 
-    outputTranscriptionRef.current += text
+    if (text) {
+      outputTranscriptionRef.current += text
 
-    setQuestion(outputTranscriptionRef.current.trim())
+      setQuestion(outputTranscriptionRef.current.trim())
+    }
+
+    if (!metadata?.turnComplete) {
+      return
+    }
+
+    const completedResponse = outputTranscriptionRef.current.trim()
+
+    // The initial question already exists in Supabase.
+    if (questionNumberRef.current === 1) {
+      questionNumberRef.current = 2
+      return
+    }
+
+    // Prevent duplicate inserts while a question is being saved.
+    if (savingQuestionRef.current || !completedResponse) {
+      return
+    }
+
+    // Ignore responses that do not appear to contain a question.
+    if (!completedResponse.includes('?')) {
+      return
+    }
+
+    savingQuestionRef.current = true
+
+    void (async () => {
+      try {
+        const nextQuestionNumber = questionNumberRef.current
+
+        const { data: insertedQuestion, error } = await supabase
+          .from('questions')
+          .insert({
+            interview_id: interviewId,
+            question: completedResponse,
+            question_number: nextQuestionNumber,
+          })
+          .select()
+          .single()
+
+        if (error) {
+          throw error
+        }
+
+        // Activate the new question only after it is saved.
+        questionNumberRef.current = nextQuestionNumber + 1
+        activeQuestionIdRef.current = insertedQuestion.id
+        setQuestionId(insertedQuestion.id)
+
+        console.log('Follow-up question saved:', insertedQuestion)
+      } catch (error) {
+        console.error('Failed to save follow-up question:', error)
+      } finally {
+        savingQuestionRef.current = false
+      }
+    })()
   })
-}, [setOnOutputTranscription])
+}, [setOnOutputTranscription, supabase, interviewId])
 
 useEffect(() => {
   if (
@@ -243,6 +344,8 @@ useEffect(() => {
     void handleEndInterview()
   }
 }, [timeLeft])
+
+console.log('Current interview ID:', interviewId)
 
     return (
         <div className="min-h-screen bg-[#061126] text-[#F6FAFD]">

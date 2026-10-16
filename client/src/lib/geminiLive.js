@@ -122,6 +122,19 @@ await audioPlayer.initialize()
 
       onmessage(message) {
   const serverContent = message.serverContent
+  console.log('Gemini event:', {
+  inputTranscription: serverContent?.inputTranscription,
+  outputTranscription: serverContent?.outputTranscription,
+  turnComplete: serverContent?.turnComplete,
+  waitingForInput: serverContent?.waitingForInput,
+})
+
+if (serverContent?.inputTranscription) {
+  console.log(
+    'Candidate transcription details:',
+    JSON.stringify(serverContent.inputTranscription)
+  )
+}
 
   // Capture the candidate's spoken answer.
   const transcription = serverContent?.inputTranscription?.text
@@ -136,17 +149,24 @@ await audioPlayer.initialize()
   const turnComplete = serverContent?.turnComplete ?? false
 
   if (outputTranscription) {
-    const isNewTurn = !outputTurnStarted
+  const isNewTurn = !outputTurnStarted
 
-    console.log('Gemini said:', outputTranscription)
+  console.log('Gemini said:', outputTranscription)
 
-    onOutputTranscription?.(outputTranscription, {
-      isNewTurn,
-      turnComplete,
-    })
+  onOutputTranscription?.(outputTranscription, {
+    isNewTurn,
+    turnComplete,
+  })
 
-    outputTurnStarted = true
-  }
+  outputTurnStarted = true
+} else if (turnComplete) {
+  // Notify the output-transcription handler if Gemini's
+  // completion signal arrives without a text chunk.
+  onOutputTranscription?.('', {
+    isNewTurn: false,
+    turnComplete: true,
+  })
+}
 
   // Play the AI's audio response.
   const parts = serverContent?.modelTurn?.parts || []

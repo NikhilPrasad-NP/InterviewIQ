@@ -42,6 +42,7 @@ function useVoiceInterview() {
   onInputTranscription: (text) => {
     transcriptBufferRef.current += text
     setTranscript(transcriptBufferRef.current)
+    console.log('Sending candidate transcription to InterviewPage:', text)
     transcriptCallbackRef.current?.(text)
   },
   onOutputTranscription: (text, metadata) => {

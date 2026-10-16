@@ -5,9 +5,11 @@ import AppSidebar from './AppSidebar'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, } from 'recharts'
 import { SidebarProvider, SidebarInset, SidebarTrigger, } from '@/components/ui/sidebar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select'
+import { useNavigate } from 'react-router-dom'
 
 function DashboardPage() {
   const { user } = useUser()
+  const navigate = useNavigate()
   const firstName = user?.firstName || 'there'
   const [practiceRange, setPracticeRange] = useState('7')
   const practiceData7Days = [
@@ -109,6 +111,7 @@ function DashboardPage() {
               <button
                 type="button"
                 className="flex h-11 items-center gap-2 rounded-lg bg-[#B3CFE5] px-5 text-sm font-semibold text-[#0A1832] transition hover:bg-[#F6FAFD]"
+                onClick={() => navigate('/interview/setup')}
               >
                 <Plus size={18} />
                 <span>Start New Interview</span>
